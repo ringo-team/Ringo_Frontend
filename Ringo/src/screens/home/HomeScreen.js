@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components/native";
 import colors from "../../constants/colors";
-import { ptdtext } from "../../components/CustomText";
+import { PtdText } from "../../components/CustomText";
 
 const HomeScreen = () => {
   return (
@@ -19,7 +19,7 @@ const Container = styled.View`
   align-items: center;
 `;
 
-const Title = styled(ptdtext)`
+const Title = styled(PtdText)`
   font-size: 24px;
   color: ${colors.black};
 `; 

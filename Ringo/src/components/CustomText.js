@@ -2,7 +2,7 @@ import React from "react";
 import { Text, StyleSheet } from "react-native";
 import colors from "../constants/colors";
 
-const ptdtext = ({ style, children, ...props }) => {
+const PtdText = ({ style, children, ...props }) => {
     return (
         <Text style={[styles.ptdtext, style]} {...props}>
             {children}
@@ -10,9 +10,9 @@ const ptdtext = ({ style, children, ...props }) => {
     );
 };
 
-const ptdbtext = ({ style, children, ...props }) => {
+const PtdBText = ({ style, children, ...props }) => {
     return (
-        <Text style={[styles.ptdtext, style]} {...props}>
+        <Text style={[styles.ptdbtext, style]} {...props}>
             {children}
         </Text>
     );
@@ -20,13 +20,13 @@ const ptdbtext = ({ style, children, ...props }) => {
 
 const styles = StyleSheet.create({
     ptdtext: {
-        fontFamily: "Pretendard-Regular",
+        fontFamily: 'Pretendard-Regular',
         color: colors.black,
     },
     ptdbtext: {
-        fontFamily: "Pretendard-Bold",
+        fontFamily: 'Pretendard-Bold',
         color: colors.black,
     },
 });
 
-export { ptdtext, ptdbtext };
+export { PtdText, PtdBText };
