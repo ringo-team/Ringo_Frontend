@@ -17,7 +17,11 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    navigation.navigate('여기에 이동할 스크린 작성하시면 됩니다!'); // 로그인 버튼 클릭 후 이동할 스크린 이름으로 변경해주세요
+    navigation.navigate('여기에 이동할 스크린 작성하시면 됩니다!');
+  }
+
+  const handleSignUp = () => {
+    navigation.navigate('TermsScreen');
   }
   return (
     <Wrapper>
@@ -50,6 +54,12 @@ const LoginScreen = () => {
             <RingoText>링고 로그인</RingoText>
           </RingoButton>
         </ButtonContainer>
+
+        <SignUpContainer>
+          <SignUpText onPress={handleSignUp}>
+            아직 계정이 없으신가요? 회원가입
+          </SignUpText>
+        </SignUpContainer>
       </Content>
     </Wrapper>
   );
@@ -123,4 +133,15 @@ const RingoButton = styled(ButtonBase)`
 const RingoText = styled(PtdText)`
   color: #FFFFFF;
   font-size: ${width * 0.04}px;
+`;
+
+const SignUpContainer = styled.View`
+  margin-top: ${width * 0.08}px;
+  align-items: center;
+`;
+
+const SignUpText = styled(PtdText)`
+  color: ${colors.black};
+  font-size: ${width * 0.035}px;
+  text-decoration-line: underline;
 `;
