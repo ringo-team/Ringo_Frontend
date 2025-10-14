@@ -52,7 +52,7 @@ const IdInputScreen = () => {
     };    // 다음 버튼 클릭
     const handleNext = () => {
         if (isDuplicateChecked) {
-            navigation.navigate('다음 스크린 이름');
+            navigation.navigate('PasswordInputScreen');
         }
     }; const handleBackPress = () => {
         navigation.goBack();
@@ -225,24 +225,22 @@ const DuplicateButtonInside = styled.TouchableOpacity`
 
 const KeyboardToolbar = styled.View`
     height: ${width * 0.12}px;
-    background-color: #F8F8F8;
-    border-top-width: 1px;
-    border-top-color: #E0E0E0;
+    background-color: #14C871;
     justify-content: center;
-    padding: 0 ${width * 0.05}px;
+    align-items: center;
 `;
 
 const NextButton = styled.TouchableOpacity`
-    height: ${width * 0.1}px;
+    width: 100%;
+    height: 100%;
     background-color: ${props => props.isActive ? '#14C871' : '#E0E0E0'};
-    border-radius: 8px;
     justify-content: center;
     align-items: center;
     opacity: ${props => props.disabled ? 0.5 : 1};
 `;
 
 const NextButtonText = styled(PtdText)`
-    color: ${props => props.isActive ? '#FFFFFF' : '#999999'};
+    color: #FFFFFF;
     font-size: ${width * 0.04}px;
     font-weight: bold;
 `;
