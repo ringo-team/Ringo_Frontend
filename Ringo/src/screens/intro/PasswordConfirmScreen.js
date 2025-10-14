@@ -47,8 +47,8 @@ const PasswordConfirmScreen = () => {
     };
 
     return (
-        <KeyboardAvoidingView 
-            style={{ flex: 1 }} 
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <Wrapper>
@@ -76,7 +76,7 @@ const PasswordConfirmScreen = () => {
                                 isReadOnly={true}
                             />
                         </InputWrapper>
-                        
+
                         {/* 두 번째 비밀번호 입력 */}
                         <InputWrapper style={{ marginTop: 20 }}>
                             <PasswordInput
@@ -90,7 +90,7 @@ const PasswordConfirmScreen = () => {
                                 hasText={confirmPassword.length > 0}
                             />
                         </InputWrapper>
-                        
+
                         <ConditionText color={getConditionColor()}>
                             {getConditionText()}
                         </ConditionText>
@@ -98,9 +98,9 @@ const PasswordConfirmScreen = () => {
 
                     <Spacer />
                 </Content>
-                
+
                 <KeyboardToolbar>
-                    <NextButton 
+                    <NextButton
                         onPress={handleNext}
                         disabled={!isMatching}
                         isActive={isMatching}

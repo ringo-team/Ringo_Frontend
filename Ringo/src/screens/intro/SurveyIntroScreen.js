@@ -38,7 +38,7 @@ const SurveyIntroScreen = () => {
                 </TextContainer>
 
                 <IllustrationContainer>
-                    <SurveyImage 
+                    <SurveyImage
                         source={require('../../assets/imgs/join_success.png')}
                         resizeMode="contain"
                         onError={() => console.log('이미지 로드 실패 - join_success.png 파일을 확인해주세요')}
@@ -49,7 +49,7 @@ const SurveyIntroScreen = () => {
                     <StartSurveyButton onPress={handleStartSurvey}>
                         <StartSurveyButtonText>지금 설문 하기</StartSurveyButtonText>
                     </StartSurveyButton>
-                    
+
                     <SkipButton onPress={handleSkipSurvey}>
                         <SkipButtonText>나중에 하기</SkipButtonText>
                     </SkipButton>

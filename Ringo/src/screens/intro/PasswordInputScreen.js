@@ -21,7 +21,7 @@ const PasswordInputScreen = () => {
         const hasNumeric = /[0-9]/.test(pwd);
         const isValidLength = pwd.length >= 8;
         const isOnlyAlphaNumeric = /^[a-zA-Z0-9]+$/.test(pwd);
-        
+
         return hasAlpha && hasNumeric && isValidLength && isOnlyAlphaNumeric;
     };
 
@@ -50,8 +50,8 @@ const PasswordInputScreen = () => {
     };
 
     return (
-        <KeyboardAvoidingView 
-            style={{ flex: 1 }} 
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <Wrapper>
@@ -80,7 +80,7 @@ const PasswordInputScreen = () => {
                                 hasText={password.length > 0}
                             />
                         </InputWrapper>
-                        
+
                         <ConditionText color={getConditionColor()}>
                             영문, 숫자 2가지 / 최소 8자 이상
                         </ConditionText>
@@ -88,9 +88,9 @@ const PasswordInputScreen = () => {
 
                     <Spacer />
                 </Content>
-                
+
                 <KeyboardToolbar>
-                    <NextButton 
+                    <NextButton
                         onPress={handleNext}
                         disabled={!isValid}
                         isActive={isValid}
