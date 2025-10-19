@@ -303,14 +303,14 @@ const AllAgreementRow = styled.TouchableOpacity`
 `;
 
 const TermsItem = styled.View`
-    margin-bottom: ${width * 0.02}px;
+    margin-bottom: ${width * 0.01}px;
 `;
 
 const AgreementRow = styled.TouchableOpacity`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: ${width * 0.04}px 0;
+    padding: ${width * 0.025}px 0;
 `;
 
 const CheckBox = styled.View`
