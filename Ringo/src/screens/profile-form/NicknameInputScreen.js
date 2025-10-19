@@ -78,7 +78,7 @@ const NicknameInputScreen = () => {
                             placeholder="블티는맛고"
                             placeholderTextColor="#CCCCCC"
                         />
-                        <CheckButton 
+                        <CheckButton
                             onPress={handleCheckDuplicate}
                             disabled={!nickname.trim()}
                         >
@@ -113,8 +113,8 @@ const NicknameInputScreen = () => {
                 <ModalOverlay onPress={handleModalClose}>
                     <ModalContent onPress={(e) => e.stopPropagation()}>
                         <ModalMessage>
-                            {isDuplicate 
-                                ? "중복된 닉네임입니다." 
+                            {isDuplicate
+                                ? "중복된 닉네임입니다."
                                 : "사용 가능한 닉네임입니다."}
                         </ModalMessage>
                         <ModalButton onPress={handleModalClose}>

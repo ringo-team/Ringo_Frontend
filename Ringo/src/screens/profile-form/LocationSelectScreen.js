@@ -13,11 +13,11 @@ const { width } = Dimensions.get('window');
 
 const LocationSelectScreen = () => {
     const navigation = useNavigation();
-    
+
     // 거주지
     const [residenceProvince, setResidenceProvince] = useState("");
     const [residenceDistrict, setResidenceDistrict] = useState("");
-    
+
     // 활동지역
     const [activityProvince, setActivityProvince] = useState("");
     const [activityDistrict, setActivityDistrict] = useState("");
@@ -71,8 +71,8 @@ const LocationSelectScreen = () => {
         // navigation.navigate('NextScreen');
     };
 
-    const isNextButtonActive = residenceProvince && residenceDistrict && 
-                               activityProvince && activityDistrict;
+    const isNextButtonActive = residenceProvince && residenceDistrict &&
+        activityProvince && activityDistrict;
 
     return (
         <Wrapper>
@@ -107,7 +107,7 @@ const LocationSelectScreen = () => {
                                 <ArrowText>▼</ArrowText>
                             </SelectButton>
 
-                            <SelectButton 
+                            <SelectButton
                                 onPress={() => openDistrictModal("residence")}
                                 disabled={!residenceProvince}
                             >
@@ -132,7 +132,7 @@ const LocationSelectScreen = () => {
                                 <ArrowText>▼</ArrowText>
                             </SelectButton>
 
-                            <SelectButton 
+                            <SelectButton
                                 onPress={() => openDistrictModal("activity")}
                                 disabled={!activityProvince}
                             >
@@ -179,7 +179,7 @@ const LocationSelectScreen = () => {
                         </ModalHeader>
                         <ModalScrollView>
                             {PROVINCES.map((province) => (
-                                <OptionButton 
+                                <OptionButton
                                     key={province}
                                     onPress={() => handleProvinceSelect(province)}
                                 >
@@ -207,9 +207,9 @@ const LocationSelectScreen = () => {
                             </CloseButton>
                         </ModalHeader>
                         <ModalScrollView>
-                            {currentType === "residence" && residenceProvince && 
+                            {currentType === "residence" && residenceProvince &&
                                 REGION_DATA[residenceProvince]?.map((district) => (
-                                    <OptionButton 
+                                    <OptionButton
                                         key={district}
                                         onPress={() => handleDistrictSelect(district)}
                                     >
@@ -217,9 +217,9 @@ const LocationSelectScreen = () => {
                                     </OptionButton>
                                 ))
                             }
-                            {currentType === "activity" && activityProvince && 
+                            {currentType === "activity" && activityProvince &&
                                 REGION_DATA[activityProvince]?.map((district) => (
-                                    <OptionButton 
+                                    <OptionButton
                                         key={district}
                                         onPress={() => handleDistrictSelect(district)}
                                     >
