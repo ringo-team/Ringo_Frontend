@@ -22,6 +22,23 @@ DerivedData
 *.xcuserstate
 **/.xcode.env.local
 
+# iOS
+#
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/xcshareddata/
+*.xcodeproj
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+ios/build/
+ios/DerivedData/
+ios/Pods/
+*.xcarchive
+ios/*.log
+Podfile.lock
+
 # Android/IntelliJ
 #
 build/
@@ -59,6 +76,18 @@ yarn-error.log
 # Ruby / CocoaPods
 **/Pods/
 /vendor/bundle/
+Podfile.lock
+
+# React Native
+#
+# Metro bundler cache
+.metro-cache/
+# React Native debugger
+.vscode/
+# Flipper
+**/.flipper/
+# React Native CLI cache
+.react-native-cli/
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
