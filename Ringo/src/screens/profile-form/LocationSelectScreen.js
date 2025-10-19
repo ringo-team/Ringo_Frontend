@@ -68,7 +68,7 @@ const LocationSelectScreen = () => {
     const handleNext = () => {
         console.log('Residence:', residenceProvince, residenceDistrict);
         console.log('Activity:', activityProvince, activityDistrict);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('InfoInputScreen');
     };
 
     const isNextButtonActive = residenceProvince && residenceDistrict &&
