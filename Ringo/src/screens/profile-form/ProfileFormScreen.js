@@ -1,0 +1,322 @@
+import React, { useState } from "react";
+import styled from "styled-components/native";
+import { Dimensions, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import DatePicker from 'react-native-date-picker';
+
+import Background from "../../components/Background";
+import colors from "../../constants/colors";
+import { PtdText, PtdBText } from "../../components/CustomText";
+import BackIcon from "../../assets/imgs/icons/back.svg";
+
+const { width } = Dimensions.get('window');
+
+const ProfileFormScreen = () => {
+    const navigation = useNavigation();
+    const [selectedGender, setSelectedGender] = useState(null); // 'male' or 'female'
+    const [birthDate, setBirthDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const handleBack = () => {
+        navigation.goBack();
+    };
+
+    const handleGenderSelect = (gender) => {
+        setSelectedGender(gender);
+    };
+
+    const handleDateConfirm = (date) => {
+        setBirthDate(date);
+        setShowDatePicker(false);
+    };
+
+    const handlePrevious = () => {
+        navigation.goBack();
+    };
+
+    const handleNext = () => {
+        // 다음 화면으로 이동
+        console.log('Selected Gender:', selectedGender);
+        console.log('Birth Date:', birthDate);
+    };
+
+    const isNextButtonActive = selectedGender !== null;
+
+    const year = birthDate.getFullYear();
+    const month = birthDate.getMonth() + 1;
+    const day = birthDate.getDate();
+
+    return (
+        <Wrapper>
+            <Background />
+            <Content>
+                <Header>
+                    <BackButton onPress={handleBack}>
+                        <BackIcon width={width * 0.06} height={width * 0.06} />
+                    </BackButton>
+                    <HeaderTitle>프로필 입력</HeaderTitle>
+                </Header>
+
+                <StepIndicator>
+                    <StepText>1</StepText>
+                    <StepDivider>/</StepDivider>
+                    <StepTotal>9</StepTotal>
+                </StepIndicator>
+
+                <MainTitle>
+                    회원님의{"\n"}
+                    기본 정보를 알려주세요
+                </MainTitle>
+
+                <Section>
+                    <SectionLabel>성별</SectionLabel>
+                    <GenderContainer>
+                        <GenderButton
+                            selected={selectedGender === 'male'}
+                            onPress={() => handleGenderSelect('male')}
+                        >
+                            <GenderText selected={selectedGender === 'male'}>남성</GenderText>
+                            <GenderIcon source={require('../../assets/imgs/icons/man.png')} />
+                        </GenderButton>
+
+                        <GenderButton
+                            selected={selectedGender === 'female'}
+                            onPress={() => handleGenderSelect('female')}
+                        >
+                            <GenderText selected={selectedGender === 'female'}>여성</GenderText>
+                            <GenderIcon source={require('../../assets/imgs/icons/woman.png')} />
+                        </GenderButton>
+                    </GenderContainer>
+                </Section>
+
+                <Section>
+                    <SectionLabel>생년월일</SectionLabel>
+                    <DateContainer>
+                        <DateInputWrapper>
+                            <DateInput onPress={() => setShowDatePicker(!showDatePicker)}>
+                                <DateInputText>{year}</DateInputText>
+                            </DateInput>
+                            <DateLabel>년</DateLabel>
+                        </DateInputWrapper>
+
+                        <DateInputWrapper>
+                            <DateInput onPress={() => setShowDatePicker(!showDatePicker)}>
+                                <DateInputText>{month}</DateInputText>
+                            </DateInput>
+                            <DateLabel>월</DateLabel>
+                        </DateInputWrapper>
+
+                        <DateInputWrapper>
+                            <DateInput onPress={() => setShowDatePicker(!showDatePicker)}>
+                                <DateInputText>{day}</DateInputText>
+                            </DateInput>
+                            <DateLabel>일</DateLabel>
+                        </DateInputWrapper>
+                    </DateContainer>
+
+                    <DatePicker
+                        modal
+                        open={showDatePicker}
+                        date={birthDate}
+                        mode="date"
+                        maximumDate={new Date()}
+                        locale="ko"
+                        title="생년월일 선택"
+                        confirmText="확인"
+                        cancelText="취소"
+                        onConfirm={handleDateConfirm}
+                        onCancel={() => setShowDatePicker(false)}
+                    />
+                </Section>
+
+                <ButtonRow>
+                    <PreviousButton onPress={handlePrevious}>
+                        <ButtonText>이전</ButtonText>
+                    </PreviousButton>
+
+                    <NextButton
+                        onPress={handleNext}
+                        disabled={!isNextButtonActive}
+                        isActive={isNextButtonActive}
+                    >
+                        <NextButtonText isActive={isNextButtonActive}>
+                            다음
+                        </NextButtonText>
+                    </NextButton>
+                </ButtonRow>
+            </Content>
+        </Wrapper>
+    );
+};
+
+const Wrapper = styled.View`
+    flex: 1;
+`;
+
+const Content = styled.View`
+    flex: 1;
+    padding: ${width * 0.05}px;
+    padding-top: ${width * 0.15}px;
+`;
+
+const Header = styled.View`
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: ${width * 0.06}px;
+    justify-content: flex-start;
+`;
+
+const BackButton = styled.TouchableOpacity`
+    padding: ${width * 0.02}px;
+    margin-right: ${width * 0.03}px;
+`;
+
+const HeaderTitle = styled(PtdBText)`
+    font-size: ${width * 0.045}px;
+    color: ${colors.black};
+    font-weight: bold;
+`;
+
+const StepIndicator = styled.View`
+    flex-direction: row;
+    align-items: baseline;
+    margin-bottom: ${width * 0.06}px;
+`;
+
+const StepText = styled(PtdBText)`
+    font-size: 18px;
+    color: ${colors.black};
+    font-weight: bold;
+`;
+
+const StepDivider = styled(PtdBText)`
+    font-size: 18px;
+    color: #CCCCCC;
+    margin: 0 ${width * 0.01}px;
+    font-weight: bold;
+`;
+
+const StepTotal = styled(PtdBText)`
+    font-size: 18px;
+    color: #CCCCCC;
+    font-weight: bold;
+`;
+
+const MainTitle = styled(PtdBText)`
+    font-size: ${width * 0.065}px;
+    color: ${colors.black};
+    line-height: ${width * 0.09}px;
+    margin-bottom: ${width * 0.08}px;
+    font-weight: bold;
+`;
+
+const Section = styled.View`
+    margin-bottom: ${width * 0.08}px;
+`;
+
+const SectionLabel = styled(PtdBText)`
+    font-size: ${width * 0.04}px;
+    color: ${colors.black};
+    margin-bottom: ${width * 0.03}px;
+`;
+
+const GenderContainer = styled.View`
+    flex-direction: row;
+    gap: ${width * 0.03}px;
+`;
+
+const GenderButton = styled.TouchableOpacity`
+    flex: 1;
+    height: 72px;
+    background-color: #FFFFFF;
+    border: 2px solid ${props => props.selected ? '#14C871' : '#E0E0E0'};
+    border-radius: 12px;
+    padding: ${width * 0.04}px ${width * 0.05}px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const GenderText = styled(PtdBText)`
+    font-size: ${width * 0.05}px;
+    color: ${colors.black};
+    font-weight: bold;
+`;
+
+const GenderIcon = styled.Image`
+    width: 48px;
+    height: 48px;
+    resize-mode: contain;
+`;
+
+const DateContainer = styled.View`
+    flex-direction: row;
+    align-items: center;
+    gap: ${width * 0.03}px;
+`;
+
+const DateInputWrapper = styled.View`
+    flex-direction: row;
+    align-items: center;
+`;
+
+const DateInput = styled.TouchableOpacity`
+    background-color: #FFFFFF;
+    border: 2px solid #E0E0E0;
+    border-radius: 8px;
+    padding: ${width * 0.035}px ${width * 0.06}px;
+    min-width: ${width * 0.17}px;
+    align-items: center;
+    justify-content: center;
+`;
+
+const DateInputText = styled(PtdText)`
+    font-size: ${width * 0.042}px;
+    color: ${colors.black};
+`;
+
+const DateLabel = styled(PtdBText)`
+    font-size: ${width * 0.04}px;
+    color: ${colors.black};
+    margin-left: ${width * 0.02}px;
+    font-weight: bold;
+`;
+
+const ButtonRow = styled.View`
+    flex-direction: row;
+    gap: ${width * 0.03}px;
+    margin-top: auto;
+    margin-bottom: ${width * 0.05}px;
+`;
+
+const PreviousButton = styled.TouchableOpacity`
+    flex: 1;
+    height: ${width * 0.13}px;
+    background-color: #E0E0E0;
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+`;
+
+const ButtonText = styled(PtdBText)`
+    color: #FFFFFF;
+    font-size: ${width * 0.04}px;
+    font-weight: bold;
+`;
+
+const NextButton = styled.TouchableOpacity`
+    flex: 3;
+    height: ${width * 0.13}px;
+    background-color: ${props => props.isActive ? colors.primary || '#14C871' : '#E0E0E0'};
+    border-radius: 12px;
+    justify-content: center;
+    align-items: center;
+    opacity: ${props => props.disabled ? 0.5 : 1};
+`;
+
+const NextButtonText = styled(PtdBText)`
+    color: ${props => props.isActive ? '#FFFFFF' : '#999999'};
+    font-size: ${width * 0.04}px;
+`;
+
+export default ProfileFormScreen;
