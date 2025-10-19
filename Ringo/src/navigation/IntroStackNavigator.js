@@ -9,6 +9,8 @@ import PasswordInputScreen from "../screens/intro/PasswordInputScreen";
 import PasswordConfirmScreen from "../screens/intro/PasswordConfirmScreen";
 import SurveyIntroScreen from "../screens/intro/SurveyIntroScreen";
 import ProfileFormScreen from "../screens/profile-form/ProfileFormScreen";
+import NicknameInputScreen from "../screens/profile-form/NicknameInputScreen";
+import LocationSelectScreen from "../screens/profile-form/LocationSelectScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +60,16 @@ const IntroStackNavigator = () => {
                 name="ProfileFormScreen"
                 component={ProfileFormScreen}
                 options={{ title: '프로필 입력' }}
+            />
+            <Stack.Screen
+                name="NicknameInputScreen"
+                component={NicknameInputScreen}
+                options={{ title: '닉네임 입력' }}
+            />
+            <Stack.Screen
+                name="LocationSelectScreen"
+                component={LocationSelectScreen}
+                options={{ title: '활동 지역 선택' }}
             />
 
         </Stack.Navigator>

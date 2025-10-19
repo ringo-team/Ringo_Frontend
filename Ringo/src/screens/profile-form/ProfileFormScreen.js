@@ -38,6 +38,7 @@ const ProfileFormScreen = () => {
         // 다음 화면으로 이동
         console.log('Selected Gender:', selectedGender);
         console.log('Birth Date:', birthDate);
+        navigation.navigate('NicknameInputScreen');
     };
 
     const isNextButtonActive = selectedGender !== null;
