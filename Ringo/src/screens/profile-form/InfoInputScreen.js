@@ -26,7 +26,7 @@ const InfoInputScreen = () => {
     const handleNext = () => {
         console.log('Job:', job);
         console.log('Height:', height);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('PreferenceInputScreen');
     };
 
     const isNextButtonActive = job.trim() !== '' && height.trim() !== '';
