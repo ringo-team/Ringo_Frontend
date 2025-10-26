@@ -24,7 +24,7 @@ const IntroductionScreen = () => {
 
     const handleNext = () => {
         console.log('Introduction:', introduction);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('HashtagInputScreen');
     };
 
     // 한글 기준 글자 수 계산 (한글 1자 = 1, 영문/숫자 1자 = 0.5로 계산)
