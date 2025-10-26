@@ -28,7 +28,7 @@ const PreferenceInputScreen = () => {
         console.log('Drinking:', drinking);
         console.log('Smoking:', smoking);
         console.log('Religion:', religion);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('IntroductionScreen');
     };
 
     const isNextButtonActive = drinking !== '' && smoking !== '' && religion !== '';
@@ -55,7 +55,7 @@ const PreferenceInputScreen = () => {
                     취향을 입력해주세요
                 </MainTitle>
 
-                <ScrollView 
+                <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >

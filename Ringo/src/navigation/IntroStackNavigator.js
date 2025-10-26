@@ -13,6 +13,7 @@ import NicknameInputScreen from "../screens/profile-form/NicknameInputScreen";
 import LocationSelectScreen from "../screens/profile-form/LocationSelectScreen";
 import InfoInputScreen from "../screens/profile-form/InfoInputScreen";
 import PreferenceInputScreen from "../screens/profile-form/PreferenceInputScreen";
+import IntroductionScreen from "../screens/profile-form/IntroductionScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -81,11 +82,16 @@ const IntroStackNavigator = () => {
             <Stack.Screen
                 name="PreferenceInputScreen"
                 component={PreferenceInputScreen}
-                options={{ title: '취향 입력' }}
+                options={{ title: "취향 입력" }}
             />
-
+            <Stack.Screen
+                name="IntroductionScreen"
+                component={IntroductionScreen}
+                options={{ title: "소개 입력" }}
+            />
         </Stack.Navigator>
     );
 };
 
 export default IntroStackNavigator;
+
