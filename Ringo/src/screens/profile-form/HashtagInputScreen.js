@@ -25,7 +25,7 @@ const HashtagInputScreen = () => {
 
     const handleNext = () => {
         console.log('Hashtags:', hashtags);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('PhotoUploadScreen');
     };
 
     const handleAddHashtag = () => {
