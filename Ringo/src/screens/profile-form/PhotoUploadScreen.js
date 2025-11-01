@@ -9,6 +9,8 @@ import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import BackIcon from "../../assets/imgs/icons/back.svg";
 
+const profileExampleImage = require('../../assets/imgs/profile_example.png');
+
 const { width } = Dimensions.get('window');
 
 const PhotoUploadScreen = () => {
@@ -136,7 +138,7 @@ const PhotoUploadScreen = () => {
                     {profileImage ? (
                         <ProfileImage source={{ uri: profileImage.uri }} />
                     ) : (
-                        <PlaceholderText>예시 이미지</PlaceholderText>
+                        <ExampleImage source={profileExampleImage} />
                     )}
                 </PhotoPreviewContainer>
 
@@ -145,7 +147,7 @@ const PhotoUploadScreen = () => {
                         <UploadButtonText>프로필 사진 업로드</UploadButtonText>
                     </UploadButton>
                 ) : (
-                    <ButtonRow>
+                    <ButtonRowFixed>
                         <ReUploadButton onPress={handleImagePicker}>
                             <ReUploadButtonText>재등록</ReUploadButtonText>
                         </ReUploadButton>
@@ -153,7 +155,7 @@ const PhotoUploadScreen = () => {
                         <SubmitButton onPress={handleNext}>
                             <SubmitButtonText>등록하기</SubmitButtonText>
                         </SubmitButton>
-                    </ButtonRow>
+                    </ButtonRowFixed>
                 )}
             </Content>
         </Wrapper>
@@ -225,13 +227,13 @@ const InfoSection = styled.View`
     flex-direction: row;
     background-color: #FFF9E6;
     border-radius: 12px;
-    padding: ${width * 0.04}px;
-    margin-bottom: ${width * 0.06}px;
+    padding: ${width * 0.03}px;
+    margin-bottom: ${width * 0.04}px;
 `;
 
 const InfoIcon = styled.Text`
-    font-size: ${width * 0.06}px;
-    margin-right: ${width * 0.03}px;
+    font-size: ${width * 0.05}px;
+    margin-right: ${width * 0.02}px;
 `;
 
 const InfoTextContainer = styled.View`
@@ -239,16 +241,16 @@ const InfoTextContainer = styled.View`
 `;
 
 const InfoTitle = styled(PtdBText)`
-    font-size: ${width * 0.038}px;
+    font-size: ${width * 0.035}px;
     color: ${colors.black};
-    margin-bottom: ${width * 0.02}px;
+    margin-bottom: ${width * 0.015}px;
     font-weight: bold;
 `;
 
 const InfoDescription = styled(PtdText)`
-    font-size: ${width * 0.032}px;
+    font-size: ${width * 0.028}px;
     color: #666666;
-    line-height: ${width * 0.05}px;
+    line-height: ${width * 0.042}px;
 `;
 
 const PhotoPreviewContainer = styled.View`
@@ -258,11 +260,16 @@ const PhotoPreviewContainer = styled.View`
     border-radius: 12px;
     justify-content: center;
     align-items: center;
-    margin-bottom: ${width * 0.05}px;
+    margin-bottom: ${width * 0.03}px;
     overflow: hidden;
 `;
 
 const ProfileImage = styled.Image`
+    width: 100%;
+    height: 100%;
+`;
+
+const ExampleImage = styled.Image`
     width: 100%;
     height: 100%;
 `;
@@ -279,6 +286,7 @@ const UploadButton = styled.TouchableOpacity`
     border-radius: 12px;
     justify-content: center;
     align-items: center;
+    margin-top: ${width * 0.02}px;
 `;
 
 const UploadButtonText = styled(PtdBText)`
@@ -287,9 +295,10 @@ const UploadButtonText = styled(PtdBText)`
     font-weight: bold;
 `;
 
-const ButtonRow = styled.View`
+const ButtonRowFixed = styled.View`
     flex-direction: row;
     gap: ${width * 0.03}px;
+    margin-top: ${width * 0.02}px;
 `;
 
 const ReUploadButton = styled.TouchableOpacity`
