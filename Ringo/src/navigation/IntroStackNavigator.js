@@ -16,6 +16,8 @@ import PreferenceInputScreen from "../screens/profile-form/PreferenceInputScreen
 import IntroductionScreen from "../screens/profile-form/IntroductionScreen";
 import HashtagInputScreen from "../screens/profile-form/HashtagInputScreen";
 import PhotoUploadScreen from "../screens/profile-form/PhotoUploadScreen";
+import FeedPhotoUploadScreen from "../screens/profile-form/FeedPhotoUploadScreen";
+import FeedDescriptionScreen from "../screens/profile-form/FeedDescriptionScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -100,6 +102,16 @@ const IntroStackNavigator = () => {
                 name="PhotoUploadScreen"
                 component={PhotoUploadScreen}
                 options={{ title: "프로필 사진 업로드" }}
+            />
+            <Stack.Screen
+                name="FeedPhotoUploadScreen"
+                component={FeedPhotoUploadScreen}
+                options={{ title: "피드 사진 업로드" }}
+            />
+            <Stack.Screen
+                name="FeedDescriptionScreen"
+                component={FeedDescriptionScreen}
+                options={{ title: "피드 소개글 입력" }}
             />
         </Stack.Navigator>
     );

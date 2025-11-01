@@ -96,7 +96,7 @@ const PhotoUploadScreen = () => {
             return;
         }
         console.log('Profile Image:', profileImage);
-        // navigation.navigate('NextScreen');
+        navigation.navigate('FeedPhotoUploadScreen');
     };
 
     return (
