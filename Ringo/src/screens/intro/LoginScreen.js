@@ -17,7 +17,7 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    navigation.navigate('여기에 이동할 스크린 작성하시면 됩니다!');
+    navigation.navigate('ProfileFormScreen');
   }
 
   const handleSignUp = () => {
