@@ -1,5 +1,9 @@
 import React from "react";
+import { Dimensions } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import colors from "../constants/colors";
+import BackButton from "../components/BackButton";
 
 import LoginScreen from "../screens/intro/LoginScreen";
 import TermsScreen from "../screens/intro/TermsScreen";
@@ -19,99 +23,115 @@ import PhotoUploadScreen from "../screens/profile-form/PhotoUploadScreen";
 import FeedPhotoUploadScreen from "../screens/profile-form/FeedPhotoUploadScreen";
 import FeedDescriptionScreen from "../screens/profile-form/FeedDescriptionScreen";
 
+const { width, height } = Dimensions.get('window');
 const Stack = createNativeStackNavigator();
 
 const IntroStackNavigator = () => {
     return (
         <Stack.Navigator
-            screenOptions={{
-                headerShown: false
-            }}
+            screenOptions={({ route, navigation }) => ({
+                headerShown: true,
+                headerStyle: {
+                    elevation: 0,
+                },
+                headerTitleStyle: {
+                    marginTop: height * 0.03,
+                    fontSize: width * 0.05,
+                    fontFamily: 'Pretendard-Bold',
+                    color: colors.black,
+                },
+                headerLeft: () => 
+                    route.name !== 'LoginScreen' ? (
+                        <BackButton onPress={() => navigation.goBack()} /> 
+                    ) : null,
+                    title: '',
+                    headerTransparent: true,
+            })}
         >
             <Stack.Screen
                 name="LoginScreen"
                 component={LoginScreen}
-                options={{ title: '로그인' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="TermsScreen"
                 component={TermsScreen}
-                options={{ title: '약관동의' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="PhoneVerificationScreen"
                 component={PhoneVerificationScreen}
-                options={{ title: '휴대폰 본인인증' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="IdInputScreen"
                 component={IdInputScreen}
-                options={{ title: '아이디 입력' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="PasswordInputScreen"
                 component={PasswordInputScreen}
-                options={{ title: '비밀번호 입력' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="PasswordConfirmScreen"
                 component={PasswordConfirmScreen}
-                options={{ title: '비밀번호 확인' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="SurveyIntroScreen"
                 component={SurveyIntroScreen}
-                options={{ title: '설문 안내' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="ProfileFormScreen"
                 component={ProfileFormScreen}
-                options={{ title: '프로필 입력' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="NicknameInputScreen"
                 component={NicknameInputScreen}
-                options={{ title: '닉네임 입력' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="LocationSelectScreen"
                 component={LocationSelectScreen}
-                options={{ title: '활동 지역 선택' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="InfoInputScreen"
                 component={InfoInputScreen}
-                options={{ title: '정보 입력' }}
+                options={{ title: '' }}
             />
             <Stack.Screen
                 name="PreferenceInputScreen"
                 component={PreferenceInputScreen}
-                options={{ title: "취향 입력" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="IntroductionScreen"
                 component={IntroductionScreen}
-                options={{ title: "소개 입력" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="HashtagInputScreen"
                 component={HashtagInputScreen}
-                options={{ title: "해시태그 입력" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="PhotoUploadScreen"
                 component={PhotoUploadScreen}
-                options={{ title: "프로필 사진 업로드" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="FeedPhotoUploadScreen"
                 component={FeedPhotoUploadScreen}
-                options={{ title: "피드 사진 업로드" }}
+                options={{ title: "" }}
             />
             <Stack.Screen
                 name="FeedDescriptionScreen"
                 component={FeedDescriptionScreen}
-                options={{ title: "피드 소개글 입력" }}
+                options={{ title: "" }}
             />
         </Stack.Navigator>
     );
