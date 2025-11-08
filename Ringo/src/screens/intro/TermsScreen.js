@@ -6,6 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
+import CheckIcon from "../../assets/imgs/icons/check.svg";
+import BackButton from "../../components/BackButton";
+import CustomButton from "../../components/CustomButton";
 
 const { width } = Dimensions.get('window');
 
@@ -56,10 +59,6 @@ const TermsScreen = () => {
     });
   };
 
-  const handleBackPress = () => {
-    navigation.goBack();
-  };
-
   const handleContinue = () => {
     // 필수 약관들이 모두 체크되었는지 확인
     if (agreements.service && agreements.privacy && agreements.photo) {
@@ -73,12 +72,16 @@ const TermsScreen = () => {
   return (
     <Wrapper>
       <Background />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: width * 0.3 }}
+        nestedScrollEnabled
+        keyboardShouldPersistTaps="handled"
+      >
       <Content>
-        <Header>
-          <BackButton onPress={handleBackPress}>
-            <BackText>{"<"}</BackText>
-          </BackButton>
-        </Header>
+        <BackButtonContainer>
+          <BackButton onPress={() => navigation.goBack()} />
+        </BackButtonContainer>
 
         <TitleContainer>
           <Title>약관동의</Title>
@@ -87,7 +90,7 @@ const TermsScreen = () => {
         <AgreementContainer>
           <AllAgreementRow onPress={handleAllAgreement}>
             <CheckBox checked={agreements.all}>
-              <CheckMark checked={agreements.all}>✓</CheckMark>
+              <StyledCheckIcon checked={agreements.all} />
             </CheckBox>
             <AgreementText>전체 동의</AgreementText>
           </AllAgreementRow>
@@ -98,7 +101,7 @@ const TermsScreen = () => {
           <TermsItem>
             <AgreementRow onPress={() => handleIndividualAgreement('service')}>
               <CheckBox checked={agreements.service}>
-                <CheckMark checked={agreements.service}>✓</CheckMark>
+                <StyledCheckIcon checked={agreements.service} />
               </CheckBox>
               <AgreementText>서비스 이용약관(필수)</AgreementText>
               <ArrowIcon
@@ -160,7 +163,7 @@ const TermsScreen = () => {
           <TermsItem>
             <AgreementRow onPress={() => handleIndividualAgreement('privacy')}>
               <CheckBox checked={agreements.privacy}>
-                <CheckMark checked={agreements.privacy}>✓</CheckMark>
+                <StyledCheckIcon checked={agreements.privacy} />
               </CheckBox>
               <AgreementText>개인정보 수집 및 이용(필수)</AgreementText>
               <ArrowIcon
@@ -192,7 +195,7 @@ const TermsScreen = () => {
           <TermsItem>
             <AgreementRow onPress={() => handleIndividualAgreement('photo')}>
               <CheckBox checked={agreements.photo}>
-                <CheckMark checked={agreements.photo}>✓</CheckMark>
+                <StyledCheckIcon checked={agreements.photo} />
               </CheckBox>
               <AgreementText>초상권 및 촬영물 활용 동의(필수)</AgreementText>
               <ArrowIcon
@@ -215,7 +218,7 @@ const TermsScreen = () => {
           <TermsItem>
             <AgreementRow onPress={() => handleIndividualAgreement('marketing')}>
               <CheckBox checked={agreements.marketing}>
-                <CheckMark checked={agreements.marketing}>✓</CheckMark>
+                <StyledCheckIcon checked={agreements.marketing} />
               </CheckBox>
               <AgreementText>마케팅·이벤트 안내 수신(선택)</AgreementText>
               <ArrowIcon
@@ -236,19 +239,17 @@ const TermsScreen = () => {
             )}
           </TermsItem>
         </AgreementContainer>
-
-        <ButtonContainer>
-          <ContinueButton
-            onPress={handleContinue}
-            disabled={!isRequiredTermsChecked}
-            isActive={isRequiredTermsChecked}
-          >
-            <ContinueText isActive={isRequiredTermsChecked}>
-              계속하기
-            </ContinueText>
-          </ContinueButton>
-        </ButtonContainer>
       </Content>
+      </ScrollView>
+      
+      <ButtonContainer>
+          <CustomButton
+            title="다음"
+            isActive={isRequiredTermsChecked}
+            onPress={handleContinue}
+            style={{width: "90%", height: width * 0.13, borderRadius: 12}}
+          />
+        </ButtonContainer>
     </Wrapper>
   );
 };
@@ -261,28 +262,18 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
+    padding: ${width * 0.08}px;
 `;
 
-const Header = styled.View`
-    margin-top: ${width * 0.1}px;
-    margin-bottom: ${width * 0.1}px;
-`;
-
-const BackButton = styled.TouchableOpacity`
-    width: ${width * 0.08}px;
-    height: ${width * 0.08}px;
-    justify-content: center;
-    align-items: center;
-`;
-
-const BackText = styled(PtdText)`
-    font-size: ${width * 0.06}px;
-    color: ${colors.black};
-`;
+const BackButtonContainer = styled.View`
+    position: absolute;
+    top: ${width * 0.1}px;
+    left: ${width * 0.02}px;
+`; 
 
 const TitleContainer = styled.View`
-    margin-bottom: ${width * 0.05}px;
+    margin-top: ${width * 0.25}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
 const Title = styled(PtdBText)`
@@ -298,8 +289,8 @@ const AgreementContainer = styled.View`
 const AllAgreementRow = styled.TouchableOpacity`
     flex-direction: row;
     align-items: center;
-    padding: ${width * 0.04}px 0;
-    margin-bottom: ${width * 0.02}px;
+    padding: ${width * 0.01}px 0;
+    margin-bottom: ${width * 0.01}px;
 `;
 
 const TermsItem = styled.View`
@@ -317,17 +308,14 @@ const CheckBox = styled.View`
     width: ${width * 0.06}px;
     height: ${width * 0.06}px;
     border-radius: ${width * 0.03}px;
-    border: 2px solid ${props => props.checked ? colors.primary || '#14C871' : '#E0E0E0'};
-    background-color: ${props => props.checked ? colors.primary || '#14C871' : 'transparent'};
+    background-color: ${props => props.checked ? colors.primary || '#14C871' : '#E0E0E0'};
     justify-content: center;
     align-items: center;
     margin-right: ${width * 0.03}px;
 `;
 
-const CheckMark = styled(PtdText)`
-    color: ${props => props.checked ? '#FFFFFF' : 'transparent'};
-    font-size: ${width * 0.035}px;
-    font-weight: bold;
+const StyledCheckIcon = styled(CheckIcon)`
+    fill: ${({ checked }) => (checked ? '#FFFFFF' : '#C0C0C0')};
 `;
 
 const AgreementText = styled(PtdText)`
@@ -348,7 +336,10 @@ const Divider = styled.View`
     margin: ${width * 0.02}px 0;
 `;
 
-const TermsContent = styled.ScrollView`
+const TermsContent = styled.ScrollView.attrs({
+    nestedScrollEnabled: true,
+    showsVerticalScrollIndicator: true,
+})`
     max-height: ${width * 0.6}px;
     padding: ${width * 0.04}px;
     padding-left: ${width * 0.12}px;
@@ -376,22 +367,4 @@ const ButtonContainer = styled.View`
     padding-top: ${width * 0.03}px;
     padding-bottom: ${width * 0.15}px;
     padding-horizontal: ${width * 0.01}px;
-    margin-top: ${width * 0.02}px;
-    margin-bottom: -${width * 0.15}px;
-    border-radius: 0px;
-`;
-
-const ContinueButton = styled.TouchableOpacity`
-    height: ${width * 0.13}px;
-    background-color: ${props => props.isActive ? colors.primary || '#14C871' : '#E0E0E0'};
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    opacity: ${props => props.disabled ? 0.5 : 1};
-`;
-
-const ContinueText = styled(PtdText)`
-    color: ${props => props.isActive ? '#FFFFFF' : '#999999'};
-    font-size: ${width * 0.04}px;
-    font-weight: bold;
 `;
