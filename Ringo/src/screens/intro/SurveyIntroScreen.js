@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
+import CustomButton from "../../components/CustomButton";
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,7 +15,7 @@ const SurveyIntroScreen = () => {
 
     const handleStartSurvey = () => {
         // 설문 화면으로 이동
-        navigation.navigate('다음 설문 스크린 이름');
+        navigation.navigate('');
     };
 
     const handleSkipSurvey = () => {
@@ -46,12 +47,14 @@ const SurveyIntroScreen = () => {
                 </IllustrationContainer>
 
                 <ButtonContainer>
-                    <StartSurveyButton onPress={handleStartSurvey}>
-                        <StartSurveyButtonText>지금 설문 하기</StartSurveyButtonText>
-                    </StartSurveyButton>
-
+                    <CustomButton
+                        title="지금 설문 하기" 
+                        onPress={handleStartSurvey}
+                        isActive={true}
+                        style={{ width: "100%", height: width * 0.13, borderRadius: 12}}
+                    />
                     <SkipButton onPress={handleSkipSurvey}>
-                        <SkipButtonText>나중에 하기</SkipButtonText>
+                        <SkipButtonText>나중에하기</SkipButtonText>
                     </SkipButton>
                 </ButtonContainer>
             </Content>
@@ -67,8 +70,7 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-    justify-content: space-between;
+    padding: ${width * 0.08}px;
 `;
 
 const TextContainer = styled.View`
@@ -97,27 +99,12 @@ const IllustrationContainer = styled.View`
 `;
 
 const SurveyImage = styled.Image`
-    width: ${width * 0.7}px;
-    height: ${width * 0.7}px;
+    width: ${width * 0.65}px;
+    height: ${width * 0.65}px;
 `;
 
 const ButtonContainer = styled.View`
     margin-bottom: ${height * 0.05}px;
-`;
-
-const StartSurveyButton = styled.TouchableOpacity`
-    height: ${width * 0.13}px;
-    background-color: #14C871;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: ${width * 0.04}px;
-`;
-
-const StartSurveyButtonText = styled(PtdText)`
-    color: #FFFFFF;
-    font-size: ${width * 0.045}px;
-    font-weight: bold;
 `;
 
 const SkipButton = styled.TouchableOpacity`
@@ -129,5 +116,4 @@ const SkipButton = styled.TouchableOpacity`
 const SkipButtonText = styled(PtdText)`
     color: #999999;
     font-size: ${width * 0.04}px;
-    text-decoration-line: underline;
 `;
