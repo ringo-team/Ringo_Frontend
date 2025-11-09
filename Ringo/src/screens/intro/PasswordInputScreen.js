@@ -12,7 +12,10 @@ const { width } = Dimensions.get('window');
 const PasswordInputScreen = () => {
     const navigation = useNavigation();
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [isValid, setIsValid] = useState(false);
+    const [isMatching, setIsMatching] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     // 비밀번호 유효성 검사
     const validatePassword = (pwd) => {
@@ -30,23 +33,35 @@ const PasswordInputScreen = () => {
         setPassword(text);
         const valid = validatePassword(text);
         setIsValid(valid);
+        setShowConfirm(valid);
+        if (confirmPassword.length > 0) {
+            setIsMatching(text === confirmPassword);
+        }
+    };
+
+    // 비밀번호 확인 처리
+    const handleConfirmPasswordChange = (text) => {
+        setConfirmPassword(text);
+        const matching = text.length > 0 && text === password;
+        setIsMatching(matching);
     };
 
     // 다음 버튼 클릭
     const handleNext = () => {
-        if (isValid) {
-            navigation.navigate('PasswordConfirmScreen', { password });
+        if (isValid && isMatching) {
+            navigation.navigate('SurveyIntroScreen');
         }
     };
 
-    const handleBackPress = () => {
-        navigation.goBack();
-    };
-
-    // 조건 텍스트 색상 결정
-    const getConditionColor = () => {
+    const getPasswordConditionColor = () => {
         if (password.length === 0) return '#999999';
         return isValid ? '#14C871' : '#FF0000';
+    }
+
+    // 조건 텍스트 색상 결정
+    const getConfirmConditionColor = () => {
+        if (confirmPassword.length === 0) return '#999999';
+        return isMatching ? '#14C871' : '#FF0000';
     };
 
     return (
@@ -57,12 +72,6 @@ const PasswordInputScreen = () => {
             <Wrapper>
                 <Background />
                 <Content>
-                    <Header>
-                        <BackButton onPress={handleBackPress}>
-                            <BackText>{"<"}</BackText>
-                        </BackButton>
-                    </Header>
-
                     <TitleContainer>
                         <Title>비밀번호를 입력해 주세요</Title>
                     </TitleContainer>
@@ -81,9 +90,34 @@ const PasswordInputScreen = () => {
                             />
                         </InputWrapper>
 
-                        <ConditionText color={getConditionColor()}>
+                        <ConditionText color={getPasswordConditionColor()}>
                             영문, 숫자 2가지 / 최소 8자 이상
                         </ConditionText>
+
+                        {showConfirm && (
+                            <>
+                                <InputWrapper style={{ marginTop: width * 0.08 }}>
+                                    <PasswordInput
+                                        placeholder="비밀번호를 다시 입력해주세요"
+                                        value={confirmPassword}
+                                        onChangeText={handleConfirmPasswordChange}
+                                        secureTextEntry={true}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        isValid={isMatching}
+                                        hasText={confirmPassword.length > 0}
+                                    />
+                                </InputWrapper>
+
+                                <ConditionText color={getConfirmConditionColor()}>
+                                    {confirmPassword.length === 0
+                                        ? '비밀번호를 다시 입력해주세요'
+                                        : isMatching
+                                            ? '비밀번호가 일치합니다'
+                                            : '비밀번호가 일치하지 않습니다'}
+                                </ConditionText>
+                            </>
+                        )}
                     </InputContainer>
 
                     <Spacer />
@@ -92,10 +126,10 @@ const PasswordInputScreen = () => {
                 <KeyboardToolbar>
                     <NextButton
                         onPress={handleNext}
-                        disabled={!isValid}
-                        isActive={isValid}
+                        disabled={!isValid || !isMatching}
+                        isActive={isValid && isMatching}
                     >
-                        <NextButtonText isActive={isValid}>
+                        <NextButtonText isActive={isValid && isMatching}>
                             다음
                         </NextButtonText>
                     </NextButton>
@@ -113,28 +147,12 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-`;
-
-const Header = styled.View`
-    margin-top: ${width * 0.1}px;
-    margin-bottom: ${width * 0.1}px;
-`;
-
-const BackButton = styled.TouchableOpacity`
-    width: ${width * 0.08}px;
-    height: ${width * 0.08}px;
-    justify-content: center;
-    align-items: center;
-`;
-
-const BackText = styled(PtdText)`
-    font-size: ${width * 0.06}px;
-    color: ${colors.black};
+    padding: ${width * 0.08}px;
 `;
 
 const TitleContainer = styled.View`
-    margin-bottom: ${width * 0.15}px;
+    margin-top: ${width * 0.25}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
 const Title = styled(PtdBText)`

@@ -7,7 +7,6 @@ import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import CheckIcon from "../../assets/imgs/icons/check.svg";
-import BackButton from "../../components/BackButton";
 import CustomButton from "../../components/CustomButton";
 
 const { width } = Dimensions.get('window');
@@ -79,10 +78,6 @@ const TermsScreen = () => {
         keyboardShouldPersistTaps="handled"
       >
       <Content>
-        <BackButtonContainer>
-          <BackButton onPress={() => navigation.goBack()} />
-        </BackButtonContainer>
-
         <TitleContainer>
           <Title>약관동의</Title>
         </TitleContainer>
@@ -264,12 +259,6 @@ const Content = styled.View`
     flex: 1;
     padding: ${width * 0.08}px;
 `;
-
-const BackButtonContainer = styled.View`
-    position: absolute;
-    top: ${width * 0.1}px;
-    left: ${width * 0.02}px;
-`; 
 
 const TitleContainer = styled.View`
     margin-top: ${width * 0.25}px;

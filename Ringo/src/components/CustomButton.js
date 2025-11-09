@@ -11,8 +11,6 @@ const CustomButton = ({
     onPress,
     title = '다음',
     isActive = false,
-    backgroundColor = colors.gray100,
-    textColor = colors.gray200,
     style,
 }) => {
     const handlePress = () => {

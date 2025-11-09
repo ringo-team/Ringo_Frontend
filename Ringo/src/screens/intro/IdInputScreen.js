@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
+import CustomModal from "../../components/CustomModal";
 
 const { width } = Dimensions.get('window');
 
@@ -54,8 +55,6 @@ const IdInputScreen = () => {
         if (isDuplicateChecked) {
             navigation.navigate('PasswordInputScreen');
         }
-    }; const handleBackPress = () => {
-        navigation.goBack();
     };
 
     // 조건 텍스트 색상 결정
@@ -72,12 +71,6 @@ const IdInputScreen = () => {
             <Wrapper>
                 <Background />
                 <Content>
-                    <Header>
-                        <BackButton onPress={handleBackPress}>
-                            <BackText>{"<"}</BackText>
-                        </BackButton>
-                    </Header>
-
                     <TitleContainer>
                         <Title>아이디를 입력해 주세요</Title>
                     </TitleContainer>
@@ -125,23 +118,13 @@ const IdInputScreen = () => {
             </Wrapper>
 
             {/* 커스텀 모달 */}
-            <Modal
-                transparent={true}
+            <CustomModal
                 visible={showModal}
-                animationType="fade"
-                onRequestClose={() => setShowModal(false)}
-            >
-                <ModalOverlay>
-                    <ModalContainer>
-                        <ModalContent>
-                            <ModalMessage>{modalMessage}</ModalMessage>
-                            <ModalButton onPress={handleModalConfirm}>
-                                <ModalButtonText>확인</ModalButtonText>
-                            </ModalButton>
-                        </ModalContent>
-                    </ModalContainer>
-                </ModalOverlay>
-            </Modal>
+                content={modalMessage}
+                confirmText="확인"
+                onConfirm={handleModalConfirm}
+                onCancel={() => setShowModal(false)}
+            />
         </KeyboardAvoidingView>
     );
 };
@@ -154,28 +137,12 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-`;
-
-const Header = styled.View`
-    margin-top: ${width * 0.1}px;
-    margin-bottom: ${width * 0.1}px;
-`;
-
-const BackButton = styled.TouchableOpacity`
-    width: ${width * 0.08}px;
-    height: ${width * 0.08}px;
-    justify-content: center;
-    align-items: center;
-`;
-
-const BackText = styled(PtdText)`
-    font-size: ${width * 0.06}px;
-    color: ${colors.black};
+    padding: ${width * 0.08}px;
 `;
 
 const TitleContainer = styled.View`
-    margin-bottom: ${width * 0.15}px;
+    margin-top: ${width * 0.25}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
 const Title = styled(PtdBText)`
@@ -253,42 +220,4 @@ const DuplicateButtonText = styled(PtdText)`
 
 const Spacer = styled.View`
     flex: 1;
-`;
-
-// 모달 스타일
-const ModalOverlay = styled.View`
-    flex: 1;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-`;
-
-const ModalContainer = styled.View`
-    width: ${width * 0.7}px;
-    background-color: #FFFFFF;
-    border-radius: 16px;
-    padding: ${width * 0.06}px;
-    align-items: center;
-`;
-
-const ModalContent = styled.View`
-    align-items: center;
-`;
-
-const ModalMessage = styled(PtdText)`
-    font-size: ${width * 0.04}px;
-    color: ${colors.black};
-    text-align: center;
-    margin-bottom: ${width * 0.06}px;
-    line-height: ${width * 0.055}px;
-`;
-
-const ModalButton = styled.TouchableOpacity`
-    padding: ${width * 0.025}px ${width * 0.05}px;
-`;
-
-const ModalButtonText = styled(PtdText)`
-    font-size: ${width * 0.04}px;
-    color: #14C871;
-    font-weight: bold;
 `;

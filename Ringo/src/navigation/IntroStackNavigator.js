@@ -10,7 +10,6 @@ import TermsScreen from "../screens/intro/TermsScreen";
 import PhoneVerificationScreen from "../screens/intro/PhoneVerificationScreen";
 import IdInputScreen from "../screens/intro/IdInputScreen";
 import PasswordInputScreen from "../screens/intro/PasswordInputScreen";
-import PasswordConfirmScreen from "../screens/intro/PasswordConfirmScreen";
 import SurveyIntroScreen from "../screens/intro/SurveyIntroScreen";
 import ProfileFormScreen from "../screens/profile-form/ProfileFormScreen";
 import NicknameInputScreen from "../screens/profile-form/NicknameInputScreen";
@@ -56,12 +55,12 @@ const IntroStackNavigator = () => {
             <Stack.Screen
                 name="TermsScreen"
                 component={TermsScreen}
-                options={{ headerShown: false }}
+                options={{ headerShown: true }}
             />
             <Stack.Screen
                 name="PhoneVerificationScreen"
                 component={PhoneVerificationScreen}
-                options={{ headerShown: false }}
+                options={{ headerShown: true }}
             />
             <Stack.Screen
                 name="IdInputScreen"
@@ -74,14 +73,9 @@ const IntroStackNavigator = () => {
                 options={{ title: '' }}
             />
             <Stack.Screen
-                name="PasswordConfirmScreen"
-                component={PasswordConfirmScreen}
-                options={{ title: '' }}
-            />
-            <Stack.Screen
                 name="SurveyIntroScreen"
                 component={SurveyIntroScreen}
-                options={{ title: '' }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="ProfileFormScreen"
@@ -138,4 +132,3 @@ const IntroStackNavigator = () => {
 };
 
 export default IntroStackNavigator;
-
