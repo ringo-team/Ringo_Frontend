@@ -1,67 +1,101 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
-import { Dimensions } from 'react-native';
+import { Dimensions, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
+import { ImageBackground } from 'react-native';
 
 import GoogleLogo from "../../assets/imgs/icons/logo_google.svg";
 import KaKaoLogo from "../../assets/imgs/icons/logo_kakao.svg";
+import LoginBackgroundImage from "../../assets/imgs/login_background.png";
 
 const { width } = Dimensions.get('window');
-const iconSize = width * 0.06; // 아이콘 크기 조절
+const iconSize = width * 0.06;
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    navigation.navigate('ProfileFormScreen');
-  }
+    if (userId === 'master' && password === 'qwe123') {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'TabNavigator' }],
+      });
+    } else {
+      Alert.alert('로그인 실패', '아이디 또는 비밀번호가 잘못되었습니다.');
+    }
+  };
 
   const handleSignUp = () => {
     navigation.navigate('TermsScreen');
-  }
+  };
+
   return (
-    <Wrapper>
-      <Background />
-      <Content>
-        <Title>
-          사진과 감성으로 이어지는{"\n"}
-          특별한 만남의 시작
-        </Title>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <Wrapper>
+        <ImageBackground source={LoginBackgroundImage} style={{ flex: 1 }}>
+          <Content>
+            <TitleContainer>
+              <Title>
+                사진과 감성으로 이어지는{"\n"}
+                특별한 만남의 시작
+              </Title>
+              <Subtitle>1분 만에 회원가입하기</Subtitle>
+            </TitleContainer>
 
-        <ButtonContainer>
-          <GoogleButton onPress={handleLogin}>
-            <IconWrapper>
-              <GoogleLogo width={iconSize} height={iconSize} />
-            </IconWrapper>
-            <GoogleText>Google로 로그인</GoogleText>
-          </GoogleButton>
+            <InputContainer>
+              <InputField
+                placeholder="아이디"
+                value={userId}
+                onChangeText={setUserId}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <InputField
+                placeholder="비밀번호"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <ForgotPasswordButton onPress={handleSignUp}>
+                <ForgotPasswordText>아이디 혹은 비밀번호를 잊으셨나요?</ForgotPasswordText>
+              </ForgotPasswordButton>
+            </InputContainer>
 
-          <KakaoButton onPress={handleLogin}>
-            <IconWrapper>
-              <KaKaoLogo width={iconSize} height={iconSize} />
-            </IconWrapper>
-            <KakaoText>카카오로 로그인</KakaoText>
-          </KakaoButton>
+            <LoginButton onPress={handleLogin}>
+              <LoginButtonText>로그인</LoginButtonText>
+            </LoginButton>
 
-          <RingoButton onPress={handleLogin}>
-            <IconWrapper>
-              {/* <RingoLogo width={iconSize} height={iconSize} /> */}
-            </IconWrapper>
-            <RingoText>링고 로그인</RingoText>
-          </RingoButton>
-        </ButtonContainer>
+            <OrDividerContainer>
+              <OrLine />
+              <OrText>또는</OrText>
+              <OrLine />
+            </OrDividerContainer>
 
-        <SignUpContainer>
-          <SignUpText onPress={handleSignUp}>
-            아직 계정이 없으신가요? 회원가입
-          </SignUpText>
-        </SignUpContainer>
-      </Content>
-    </Wrapper>
+            <SocialButtonsContainer>
+              <SocialButton onPress={handleSignUp}>
+                <GoogleLogo width={iconSize} height={iconSize} />
+              </SocialButton>
+              <SocialButton style={{ backgroundColor: '#FFEB3B' }} onPress={handleSignUp}>
+                <KaKaoLogo width={iconSize} height={iconSize} />
+              </SocialButton>
+              <MainSocialButton onPress={handleSignUp}>
+                <MainSocialButtonText>L</MainSocialButtonText>
+              </MainSocialButton>
+            </SocialButtonsContainer>
+          </Content>
+        </ImageBackground>
+      </Wrapper>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -69,79 +103,140 @@ export default LoginScreen;
 
 const Wrapper = styled.View`
   flex: 1;
+  background-color: #F5F5F0;
 `;
 
 const Content = styled.View`
   flex: 1;
+  padding: ${width * 0.08}px;
   justify-content: center;
-  align-items: center;
+`;
+
+const TitleContainer = styled.View`
+  align-items: flex-start;
+  margin-bottom: ${width * 0.15}px;
 `;
 
 const Title = styled(PtdBText)`
   font-size: ${width * 0.065}px;
   color: ${colors.black};
+  text-align: left;
   font-weight: bold;
-  margin-bottom: ${width * 0.99}px;
-  align-self: flex-start;
-  margin-left: ${width * 0.1}px;
+  line-height: ${width * 0.08}px;
+  margin-bottom: ${width * 0.03}px;
 `;
 
-const ButtonContainer = styled.View`
-  width: ${width * 0.8}px;
-  gap: ${width * 0.02}px;
-  flex-direction: column;
-  justify-content: center;
+const Subtitle = styled(PtdText)`
+  font-size: ${width * 0.035}px;
+  color: #666;
+  text-align: left;
 `;
 
-const ButtonBase = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+const InputContainer = styled.View`
+  margin-bottom: ${width * 0.08}px;
+`;
+
+const InputField = styled.TextInput`
+  width: 100%;
   height: ${width * 0.13}px;
-  border-radius: 12px;
-  gap: ${width * 0.02}px;
-`
-
-const IconWrapper = styled.View`
-  justify-content: center;
-  align-items: center;
-`;
-
-const GoogleButton = styled(ButtonBase)`
   background-color: #FFFFFF;
+  border-radius: ${width * 0.03}px;
+  padding: 0 ${width * 0.04}px;
+  font-size: ${width * 0.04}px;
+  margin-bottom: ${width * 0.04}px;
   border: 1px solid #E0E0E0;
 `;
 
-const GoogleText = styled(PtdText)`
-  color: #000000;
-  font-size: ${width * 0.04}px;
-`;
-
-const KakaoButton = styled(ButtonBase)`
-  background-color: #FEE500;
-`;
-
-const KakaoText = styled(PtdText)`
-  color: #000000;
-  font-size: ${width * 0.04}px;
-`;
-
-const RingoButton = styled(ButtonBase)`
+const LoginButton = styled.TouchableOpacity`
+  width: 100%;
+  height: ${width * 0.13}px;
   background-color: #14C871;
+  border-radius: ${width * 0.03}px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: ${width * 0.08}px;
 `;
 
-const RingoText = styled(PtdText)`
+const LoginButtonText = styled(PtdBText)`
   color: #FFFFFF;
   font-size: ${width * 0.04}px;
 `;
 
-const SignUpContainer = styled.View`
-  margin-top: ${width * 0.08}px;
+const SocialButtonsContainer = styled.View`
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
+  margin-top: ${width * 0.04}px;
+  gap: ${width * 0.04}px;
 `;
 
-const SignUpText = styled(PtdText)`
-  color: ${colors.black};
-  font-size: ${width * 0.035}px;
+const SocialButton = styled.TouchableOpacity`
+  width: ${width * 0.12}px;
+  height: ${width * 0.12}px;
+  border-radius: ${width * 0.06}px;
+  background-color: #FFFFFF;
+  align-items: center;
+  justify-content: center;
+  elevation: 2;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+`;
+
+const MainSocialButton = styled.TouchableOpacity`
+  width: ${width * 0.12}px;
+  height: ${width * 0.12}px;
+  border-radius: ${width * 0.06}px;
+  background-color: #14C871;
+  align-items: center;
+  justify-content: center;
+  elevation: 2;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+`;
+
+const MainSocialButtonText = styled(PtdBText)`
+  font-size: ${width * 0.05}px;
+  color: #FFFFFF;
+`;
+
+const HelpText = styled(PtdText)`
+  font-size: ${width * 0.025}px;
+  color: #666;
+  position: absolute;
+  bottom: ${width * -0.05}px;
+  text-align: center;
+  width: ${width * 0.25}px;
+`;
+
+const ForgotPasswordButton = styled.TouchableOpacity`
+  align-self: flex-start;
+  margin-top: ${width * 0.02}px;
+`;
+
+const ForgotPasswordText = styled(PtdText)`
+  font-size: ${width * 0.032}px;
+  color: #666;
   text-decoration-line: underline;
+`;
+
+const OrDividerContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin: ${width * 0.04}px 0;
+`;
+
+const OrLine = styled.View`
+  flex: 1;
+  height: 1px;
+  background-color: #E0E0E0;
+`;
+
+const OrText = styled(PtdText)`
+  margin: 0 ${width * 0.04}px;
+  font-size: ${width * 0.035}px;
+  color: #666;
 `;

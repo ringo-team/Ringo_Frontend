@@ -3,15 +3,15 @@ import styled from "styled-components/native";
 import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 
-const MypageScreen = () => {
-    return (
-        <Container>
-            <Title>Mypage Screen</Title>
-        </Container>
-    );
+const ChatScreen = () => {
+  return (
+    <Container>
+      <Title>Chat Screen</Title>
+    </Container>
+  );
 };
 
-export default MypageScreen;
+export default ChatScreen;
 
 const Container = styled.View`
   flex: 1;
