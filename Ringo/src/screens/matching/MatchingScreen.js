@@ -4,11 +4,11 @@ import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 
 const MatchingScreen = () => {
-  return (
-    <Container>
-      <Title>Matching Screen</Title>
-    </Container>
-  );
+    return (
+        <Container>
+            <Title>Matching Screen</Title>
+        </Container>
+    );
 };
 
 export default MatchingScreen;

@@ -4,11 +4,11 @@ import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 
 const ChatScreen = () => {
-  return (
-    <Container>
-      <Title>Chat Screen</Title>
-    </Container>
-  );
+    return (
+        <Container>
+            <Title>Chat Screen</Title>
+        </Container>
+    );
 };
 
 export default ChatScreen;
