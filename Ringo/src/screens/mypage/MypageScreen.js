@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components/native";
 import { Dimensions, ScrollView, TouchableOpacity, Image } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
 
@@ -20,6 +21,8 @@ import GirlProfileImage from "../../assets/imgs/girl_profile_image.png";
 const { width, height } = Dimensions.get('window');
 
 const MypageScreen = () => {
+    const navigation = useNavigation();
+
     return (
         <Container>
             <Header>
@@ -103,7 +106,7 @@ const MypageScreen = () => {
                 </MenuItem>
             </MenuSection>
 
-            <ProfilePreviewButton>
+            <ProfilePreviewButton onPress={() => navigation.navigate('ProfilePreview')}>
                 <ProfilePreviewButtonText>프로필 미리보기</ProfilePreviewButtonText>
             </ProfilePreviewButton>
         </Container>

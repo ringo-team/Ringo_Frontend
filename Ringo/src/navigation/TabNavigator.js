@@ -6,7 +6,7 @@ import HomeScreen from "../screens/home/HomeScreen";
 import SnapScreen from "../screens/snap/SnapScreen";
 import MatchingScreen from "../screens/matching/MatchingScreen";
 import ChatScreen from "../screens/chat/ChatScreen";
-import MypageScreen from "../screens/mypage/MypageScreen";
+import MypageStackNavigator from "./MypageStackNavigator";
 
 // Tab icons
 import TabHomeIcon from "../assets/imgs/icons/tab/tab_home.png";
@@ -72,7 +72,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Snap" component={SnapScreen} />
       <Tab.Screen name="Matching" component={MatchingScreen} />
       <Tab.Screen name="Chat" component={ChatScreen} />
-      <Tab.Screen name="Mypage" component={MypageScreen} />
+      <Tab.Screen name="Mypage" component={MypageStackNavigator} />
     </Tab.Navigator>
   );
 }
