@@ -21,96 +21,96 @@ import GirlProfileImage from "../../assets/imgs/girl_profile_image.png";
 const { width, height } = Dimensions.get('window');
 
 const MypageScreen = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    return (
-        <Container>
-            <Header>
-                <BackButton>
-                    <BackButtonText>‹</BackButtonText>
-                </BackButton>
-            </Header>
+  return (
+    <Container>
+      <Header>
+        <BackButton>
+          <BackButtonText>‹</BackButtonText>
+        </BackButton>
+      </Header>
 
-            <ProfileSection>
-                <ProfileImageContainer>
-                    <ProfileImage source={GirlProfileImage} />
-                </ProfileImageContainer>
-                <ProfileInfo>
-                    <ProfileName>닉네임닉네임</ProfileName>
-                    <ProfileDescription>
-                        아직 얼굴 인증을 받지 않았어요!
-                    </ProfileDescription>
-                    <VerificationLink>본인 인증하러 가기</VerificationLink>
-                </ProfileInfo>
-            </ProfileSection>
+      <ProfileSection>
+        <ProfileImageContainer>
+          <ProfileImage source={GirlProfileImage} />
+        </ProfileImageContainer>
+        <ProfileInfo>
+          <ProfileName>닉네임닉네임</ProfileName>
+          <ProfileDescription>
+            아직 얼굴 인증을 받지 않았어요!
+          </ProfileDescription>
+          <VerificationLink>본인 인증하러 가기</VerificationLink>
+        </ProfileInfo>
+      </ProfileSection>
 
-            <PointSection>
-                <PointRow>
-                    <PointLabelContainer>
-                        <PointLabel>나의 링포인트  </PointLabel>
-                        <PointValue>2000 P</PointValue>
-                    </PointLabelContainer>
-                    <PointButton>
-                        <PointButtonText>포인트 충전하기</PointButtonText>
-                    </PointButton>
-                </PointRow>
-            </PointSection>
+      <PointSection>
+        <PointRow>
+          <PointLabelContainer>
+            <PointLabel>나의 링포인트  </PointLabel>
+            <PointValue>2000 P</PointValue>
+          </PointLabelContainer>
+          <PointButton>
+            <PointButtonText>포인트 충전하기</PointButtonText>
+          </PointButton>
+        </PointRow>
+      </PointSection>
 
-            <StatsSection>
-                <StatCard style={{ backgroundColor: '#F3E8FF' }}>
-                    <StatIconContainer>
-                        <StatIcon source={BellReceiveIcon} />
-                    </StatIconContainer>
-                    <StatInfo>
-                        <StatLabel>나에게 온 연결신청</StatLabel>
-                        <StatNumber style={{ color: '#8B5CF6' }}>6</StatNumber>
-                    </StatInfo>
-                </StatCard>
-                <StatCard style={{ backgroundColor: '#EEF2FF' }}>
-                    <StatIconContainer>
-                        <StatIcon source={HeartSendIcon} />
-                    </StatIconContainer>
-                    <StatInfo>
-                        <StatLabel>내가 보낸 연결신청</StatLabel>
-                        <StatNumber style={{ color: '#6366F1' }}>4</StatNumber>
-                    </StatInfo>
-                </StatCard>
-            </StatsSection>
+      <StatsSection>
+        <StatCard style={{ backgroundColor: '#F3E8FF' }} onPress={() => navigation.navigate('ConnectionRequestsScreen')}>
+          <StatIconContainer>
+            <StatIcon source={BellReceiveIcon} />
+          </StatIconContainer>
+          <StatInfo>
+            <StatLabel>나에게 온 연결신청</StatLabel>
+            <StatNumber style={{ color: '#8B5CF6' }}>6</StatNumber>
+          </StatInfo>
+        </StatCard>
+        <StatCard style={{ backgroundColor: '#EEF2FF' }}>
+          <StatIconContainer>
+            <StatIcon source={HeartSendIcon} />
+          </StatIconContainer>
+          <StatInfo>
+            <StatLabel>내가 보낸 연결신청</StatLabel>
+            <StatNumber style={{ color: '#6366F1' }}>4</StatNumber>
+          </StatInfo>
+        </StatCard>
+      </StatsSection>
 
-            <Divider />
+      <Divider />
 
-            <MenuSection>
-                <MenuItem>
-                    <MenuIcon source={PencilEditIcon} />
-                    <MenuText>프로필 수정</MenuText>
-                </MenuItem>
-                <MenuItem>
-                    <MenuIcon source={EditServeyIcon} />
-                    <MenuText>답변 수정하기</MenuText>
-                </MenuItem>
-                <MenuItem>
-                    <MenuIcon source={OptionIcon} />
-                    <MenuText>설정 및 계정 관리</MenuText>
-                </MenuItem>
-                <MenuItem>
-                    <MenuIcon source={BlockIcon} />
-                    <MenuText>지인 차단</MenuText>
-                </MenuItem>
-                <MenuItem>
-                    <MenuIcon source={NotificationIcon} />
-                    <MenuText>공지사항</MenuText>
-                </MenuItem>
-                <MenuItem>
-                    <MenuIcon source={QuestionIcon} />
-                    <MenuText>문의하기</MenuText>
-                </MenuItem>
-            </MenuSection>
+      <MenuSection>
+        <MenuItem>
+          <MenuIcon source={PencilEditIcon} />
+          <MenuText>프로필 수정</MenuText>
+        </MenuItem>
+        <MenuItem>
+          <MenuIcon source={EditServeyIcon} />
+          <MenuText>답변 수정하기</MenuText>
+        </MenuItem>
+        <MenuItem>
+          <MenuIcon source={OptionIcon} />
+          <MenuText>설정 및 계정 관리</MenuText>
+        </MenuItem>
+        <MenuItem>
+          <MenuIcon source={BlockIcon} />
+          <MenuText>지인 차단</MenuText>
+        </MenuItem>
+        <MenuItem>
+          <MenuIcon source={NotificationIcon} />
+          <MenuText>공지사항</MenuText>
+        </MenuItem>
+        <MenuItem>
+          <MenuIcon source={QuestionIcon} />
+          <MenuText>문의하기</MenuText>
+        </MenuItem>
+      </MenuSection>
 
-            <ProfilePreviewButton onPress={() => navigation.navigate('ProfilePreview')}>
-                <ProfilePreviewButtonText>프로필 미리보기</ProfilePreviewButtonText>
-            </ProfilePreviewButton>
-        </Container>
-    );
+      <ProfilePreviewButton onPress={() => navigation.navigate('ProfilePreview')}>
+        <ProfilePreviewButtonText>프로필 미리보기</ProfilePreviewButtonText>
+      </ProfilePreviewButton>
+    </Container>
+  );
 };
 
 export default MypageScreen;
@@ -226,7 +226,7 @@ const StatsSection = styled.View`
   margin-bottom: ${width * 0.03}px;
 `;
 
-const StatCard = styled.View`
+const StatCard = styled.TouchableOpacity`
   flex: 1;
   height: ${(width / 2) * 0.45}px;
   padding: ${width * 0.045}px ${width * 0.04}px;

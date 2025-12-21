@@ -17,7 +17,11 @@ import colors from '../../constants/colors';
 // 임시 이미지들 - 실제 구현시 사용자 이미지로 교체
 const GirlProfileImage = require('../../assets/imgs/girl_profile_image.png');
 const SampleImage1 = require('../../assets/imgs/girl_profile_image.png');
-const SampleImage2 = require('../../assets/imgs/girl_profile_image.png');
+const SampleImage2 = require('../../assets/imgs/girl_feed_image_01.png');
+const SampleImage3 = require('../../assets/imgs/girl_feed_image_02.png');
+const SampleImage4 = require('../../assets/imgs/girl_profile_image.png');
+const SampleImage5 = require('../../assets/imgs/girl_profile_image.png');
+const SampleImage6 = require('../../assets/imgs/girl_profile_image.png');
 
 // 아이콘들
 const ProfileReportIcon = require('../../assets/imgs/icons/mypage/profile_report.png');
@@ -31,7 +35,15 @@ const ProfilePreviewScreen = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
-  const profileImages = [SampleImage1, SampleImage2, GirlProfileImage];
+  const profileImages = [
+    SampleImage1,
+    SampleImage2,
+    GirlProfileImage,
+    SampleImage3,
+    SampleImage4,
+    SampleImage5,
+    SampleImage6
+  ];
 
   const openImageModal = (index) => {
     setSelectedImageIndex(index % profileImages.length);
@@ -44,13 +56,13 @@ const ProfilePreviewScreen = () => {
   };
 
   const goToPreviousImage = () => {
-    setSelectedImageIndex((prev) => 
+    setSelectedImageIndex((prev) =>
       prev === 0 ? profileImages.length - 1 : prev - 1
     );
   };
 
   const goToNextImage = () => {
-    setSelectedImageIndex((prev) => 
+    setSelectedImageIndex((prev) =>
       prev === profileImages.length - 1 ? 0 : prev + 1
     );
   };
@@ -58,7 +70,7 @@ const ProfilePreviewScreen = () => {
   const renderPhotosContent = () => {
     // 3x3 그리드를 위해 9개 사진만 사용
     const gridImages = [...profileImages, ...profileImages, ...profileImages].slice(0, 9);
-    
+
     return (
       <PhotosContainer>
         <PhotoGrid>
@@ -107,8 +119,8 @@ const ProfilePreviewScreen = () => {
         <InfoSection>
           <InfoTitle>자기소개</InfoTitle>
           <InfoDescription>
-            안녕하세요! 디자인 일을 하고 있고, 여행과 음식을 좋아합니다. 
-            특히 명탐정코난을 정말 좋아해서 관련 굿즈 수집도 하고 있어요. 
+            안녕하세요! 디자인 일을 하고 있고, 여행과 음식을 좋아합니다.
+            특히 명탐정코난을 정말 좋아해서 관련 굿즈 수집도 하고 있어요.
             강아지 키우고 있고, NCT127 팬입니다 ㅎㅎ
           </InfoDescription>
         </InfoSection>
@@ -119,62 +131,62 @@ const ProfilePreviewScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
-      
-      <ScrollView 
+
+      <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ backgroundColor: colors.black, paddingBottom: height * 0.22 }}
+        contentContainerStyle={{ backgroundColor: 'white', paddingBottom: height * 0.22 }}
         showsVerticalScrollIndicator={false}
       >
         <Container>
-      
-      {/* 배경 이미지 */}
-      <BackgroundContainer>
-        <BackgroundImage source={GirlProfileImage} />
-      </BackgroundContainer>
-      
-      {/* 하단 탭 영역 */}
-      <BottomSection>
-        {/* 프로필 정보 헤더 */}
-        <ProfileHeader>
-          <ProfileHeaderGradient />
-          <ProfileHeaderContent>
-            <ProfileHeaderLeft>
-              <ProfileName>닉네임닉네임 (25세 여)</ProfileName>
-              <ProfileTags>
-                #음식 #명탐정코난 #여행블로그{"\n"}#강아지 #NCT127
-              </ProfileTags>
-            </ProfileHeaderLeft>
-            <ConnectButton>
-              <ConnectButtonIcon source={ProfileHeartBubbleIcon} />
-              <ConnectButtonText>연결신청</ConnectButtonText>
-            </ConnectButton>
-          </ProfileHeaderContent>
-        </ProfileHeader>
-        
-        <TabContainer>
-          <TabButton 
-            isActive={activeTab === '사진'} 
-            onPress={() => setActiveTab('사진')}
-          >
-            <TabText isActive={activeTab === '사진'}>사진</TabText>
-          </TabButton>
-          <TabButton 
-            isActive={activeTab === '정보'} 
-            onPress={() => setActiveTab('정보')}
-          >
-            <TabText isActive={activeTab === '정보'}>정보</TabText>
-          </TabButton>
-        </TabContainer>
 
-        <ContentContainer>
-          {activeTab === '사진' ? renderPhotosContent() : renderInfoContent()}
-        </ContentContainer>
-      </BottomSection>
+          {/* 배경 이미지 */}
+          <BackgroundContainer>
+            <BackgroundImage source={GirlProfileImage} />
+          </BackgroundContainer>
+
+          {/* 하단 탭 영역 */}
+          <BottomSection>
+            {/* 프로필 정보 헤더 */}
+            <ProfileHeader>
+              <ProfileHeaderGradient />
+              <ProfileHeaderContent>
+                <ProfileHeaderLeft>
+                  <ProfileName>닉네임닉네임 (25세 여)</ProfileName>
+                  <ProfileTags>
+                    #음식 #명탐정코난 #여행블로그{"\n"}#강아지 #NCT127
+                  </ProfileTags>
+                </ProfileHeaderLeft>
+                <ConnectButton>
+                  <ConnectButtonIcon source={ProfileHeartBubbleIcon} />
+                  <ConnectButtonText>연결신청</ConnectButtonText>
+                </ConnectButton>
+              </ProfileHeaderContent>
+            </ProfileHeader>
+
+            <TabContainer>
+              <TabButton
+                isActive={activeTab === '사진'}
+                onPress={() => setActiveTab('사진')}
+              >
+                <TabText isActive={activeTab === '사진'}>사진</TabText>
+              </TabButton>
+              <TabButton
+                isActive={activeTab === '정보'}
+                onPress={() => setActiveTab('정보')}
+              >
+                <TabText isActive={activeTab === '정보'}>정보</TabText>
+              </TabButton>
+            </TabContainer>
+
+            <ContentContainer>
+              {activeTab === '사진' ? renderPhotosContent() : renderInfoContent()}
+            </ContentContainer>
+          </BottomSection>
 
 
         </Container>
       </ScrollView>
-      
+
       {/* 고정 버튼들 */}
       <FixedHeader>
         <BackButton onPress={() => navigation.goBack()}>
@@ -184,7 +196,7 @@ const ProfilePreviewScreen = () => {
           <NotificationIcon source={ProfileReportIcon} />
         </NotificationButton>
       </FixedHeader>
-      
+
       <FixedFloatingButtons>
         <FloatingButton style={{ backgroundColor: 'white' }}>
           <FloatingButtonText style={{ color: colors.black }}>프로필 수정하기</FloatingButtonText>
@@ -193,7 +205,7 @@ const ProfilePreviewScreen = () => {
           <FloatingButtonText style={{ color: 'white' }}>마이페이지 가기</FloatingButtonText>
         </FloatingButton>
       </FixedFloatingButtons>
-      
+
       {/* 이미지 확대 모달 */}
       <Modal
         visible={isImageModalVisible}
@@ -204,31 +216,32 @@ const ProfilePreviewScreen = () => {
         <ImageModalContainer>
           <ImageModalBackground onPress={closeImageModal}>
             <ImageModalContent>
-              <CloseButton onPress={closeImageModal}>
-                <CloseButtonText>×</CloseButtonText>
-              </CloseButton>
-              
               <ImageContainer>
-                <NavigationButton 
-                  style={{ left: width * 0.05 }}
-                  onPress={goToPreviousImage}
-                >
-                  <NavigationButtonText>‹</NavigationButtonText>
-                </NavigationButton>
-                
                 <ModalImage source={profileImages[selectedImageIndex]} />
-                
-                <NavigationButton 
-                  style={{ right: width * 0.05 }}
-                  onPress={goToNextImage}
-                >
-                  <NavigationButtonText>›</NavigationButtonText>
-                </NavigationButton>
+                <CloseButton onPress={closeImageModal}>
+                  <CloseButtonText>×</CloseButtonText>
+                </CloseButton>
               </ImageContainer>
-              
-              <ImageDescription>
-                이 사진은 영국에서부터 온 사진으로 제가 정말 좋아하는 사진입니다
-              </ImageDescription>
+
+              <NavigationButton
+                style={{ left: 8 }}
+                onPress={goToPreviousImage}
+              >
+                <NavigationButtonText>‹</NavigationButtonText>
+              </NavigationButton>
+
+              <NavigationButton
+                style={{ right: 8 }}
+                onPress={goToNextImage}
+              >
+                <NavigationButtonText>›</NavigationButtonText>
+              </NavigationButton>
+
+              <ImageDescriptionContainer>
+                <ImageDescription>
+                  이 사진은 영국에서부터 온 사진으로 제가 정말 좋아하는 사진입니다
+                </ImageDescription>
+              </ImageDescriptionContainer>
             </ImageModalContent>
           </ImageModalBackground>
         </ImageModalContainer>
@@ -364,7 +377,7 @@ const ProfileHeaderGradient = styled(LinearGradient).attrs({
 const ProfileHeaderContent = styled.View`
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   padding: ${width * 0.04}px;
   z-index: 1;
 `;
@@ -442,6 +455,7 @@ const ProfilePhoto = styled.Image`
 
 const InfoContainer = styled.View`
   flex: 1;
+  background-color: white;
   padding: ${width * 0.05}px;
 `;
 
@@ -549,11 +563,9 @@ const ImageModalBackground = styled.TouchableOpacity`
 `;
 
 const ImageModalContent = styled.View`
-  width: ${width * 0.9}px;
-  max-height: ${height * 0.8}px;
-  background-color: white;
-  border-radius: ${width * 0.05}px;
-  padding: ${width * 0.05}px;
+  flex: 1;
+  width: 100%;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -561,57 +573,72 @@ const CloseButton = styled.TouchableOpacity`
   position: absolute;
   top: ${width * 0.03}px;
   right: ${width * 0.03}px;
-  width: ${width * 0.08}px;
-  height: ${width * 0.08}px;
-  border-radius: ${width * 0.04}px;
-  background-color: rgba(0, 0, 0, 0.1);
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 100;
 `;
 
 const CloseButtonText = styled.Text`
-  font-size: ${width * 0.05}px;
-  color: #666;
+  font-size: 16px;
+  color: white;
   font-weight: bold;
 `;
 
 const ImageContainer = styled.View`
   position: relative;
-  width: 100%;
+  width: ${width - 80}px;
+  height: ${(width - 80) * 1.2}px;
+  justify-content: center;
   align-items: center;
-  margin: ${width * 0.05}px 0;
+  margin: 0 40px;
 `;
 
 const NavigationButton = styled.TouchableOpacity`
   position: absolute;
   top: 50%;
-  width: ${width * 0.1}px;
-  height: ${width * 0.1}px;
-  border-radius: ${width * 0.05}px;
-  background-color: rgba(0, 0, 0, 0.6);
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
   justify-content: center;
   align-items: center;
   z-index: 10;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.25;
+  shadow-radius: 4px;
+  elevation: 5;
 `;
 
 const NavigationButtonText = styled.Text`
-  font-size: ${width * 0.06}px;
-  color: white;
+  font-size: 16px;
+  color: #333;
   font-weight: bold;
 `;
 
 const ModalImage = styled.Image`
-  width: ${width * 0.7}px;
-  height: ${width * 0.8}px;
-  border-radius: ${width * 0.03}px;
-  resize-mode: contain;
+  width: 100%;
+  height: 100%;
+  resize-mode: cover;
+  border-top-left-radius: ${width * 0.03}px;
+  border-top-right-radius: ${width * 0.03}px;
+`;
+
+const ImageDescriptionContainer = styled.View`
+  background-color: white;
+  padding: ${width * 0.05}px;
+  margin: 0 40px;
+  border-bottom-left-radius: ${width * 0.03}px;
+  border-bottom-right-radius: ${width * 0.03}px;
 `;
 
 const ImageDescription = styled.Text`
   font-size: ${width * 0.035}px;
   color: #333;
-  text-align: center;
+  text-align: left;
   line-height: ${width * 0.05}px;
-  margin-top: ${width * 0.03}px;
 `;
