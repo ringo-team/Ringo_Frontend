@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
-import { Dimensions, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Dimensions, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -11,11 +11,16 @@ const { width } = Dimensions.get('window');
 
 const PasswordInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { userId } = route.params || {}; // 아이디 입력 화면에서 전달받은 아이디
+    
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [isMatching, setIsMatching] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [registeredUserId, setRegisteredUserId] = useState(null);
 
     // 비밀번호 유효성 검사
     const validatePassword = (pwd) => {
@@ -46,10 +51,61 @@ const PasswordInputScreen = () => {
         setIsMatching(matching);
     };
 
+    // 회원가입 API 호출
+    const handleSignup = async () => {
+        if (!userId) {
+            Alert.alert('오류', '아이디 정보가 없습니다.');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const response = await fetch('http://localhost:8080/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: userId,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                // 회원가입 성공
+                const responseData = await response.json();
+                const newUserId = responseData.userId;
+                const resultMessage = responseData.result || '회원가입이 성공적으로 완료되었습니다.';
+                
+                // userId 저장
+                setRegisteredUserId(newUserId);
+                console.log('등록된 사용자 ID:', newUserId);
+                
+                Alert.alert(
+                    '회원가입 완료',
+                    resultMessage,
+                    [{
+                        text: '확인',
+                        onPress: () => navigation.navigate('ProfileFormScreen', { registeredUserId: newUserId })
+                    }]
+                );
+            } else {
+                // 회원가입 실패
+                const errorData = await response.json();
+                Alert.alert('회원가입 실패', errorData.message || '회원가입에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('회원가입 오류:', error);
+            Alert.alert('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // 다음 버튼 클릭
     const handleNext = () => {
         if (isValid && isMatching) {
-            navigation.navigate('SurveyIntroScreen');
+            handleSignup();
         }
     };
 
@@ -126,11 +182,11 @@ const PasswordInputScreen = () => {
                 <KeyboardToolbar>
                     <NextButton
                         onPress={handleNext}
-                        disabled={!isValid || !isMatching}
-                        isActive={isValid && isMatching}
+                        disabled={!isValid || !isMatching || isLoading}
+                        isActive={isValid && isMatching && !isLoading}
                     >
-                        <NextButtonText isActive={isValid && isMatching}>
-                            다음
+                        <NextButtonText isActive={isValid && isMatching && !isLoading}>
+                            {isLoading ? '회원가입 중...' : '회원가입'}
                         </NextButtonText>
                     </NextButton>
                 </KeyboardToolbar>

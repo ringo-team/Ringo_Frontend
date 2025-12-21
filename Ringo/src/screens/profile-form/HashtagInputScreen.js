@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
-import { Dimensions, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Dimensions, ScrollView, Alert } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -12,8 +12,22 @@ const { width } = Dimensions.get('window');
 
 const HashtagInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const profileData = route.params || {}; // 이전 화면들에서 전달된 프로필 정보
+    
+    // 디버깅: 받은 데이터 확인
+    console.log('=== HashtagInputScreen 디버깅 ===');
+    console.log('전체 profileData:', JSON.stringify(profileData, null, 2));
+    console.log('userId:', profileData.userId);
+    console.log('registeredUserId:', profileData.registeredUserId);
+    console.log('nickname:', profileData.nickname);
+    console.log('address:', profileData.address);
+    console.log('job:', profileData.job);
+    console.log('=== 디버깅 끝 ===');
+    
     const [hashtagInput, setHashtagInput] = useState('');
     const [hashtags, setHashtags] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleBack = () => {
         navigation.goBack();
@@ -23,9 +37,79 @@ const HashtagInputScreen = () => {
         navigation.goBack();
     };
 
+    // 프로필 정보 서버 전송
+    const submitProfileData = async () => {
+        const userId = profileData.userId || profileData.registeredUserId;
+        
+        if (!userId) {
+            console.log('사용자 ID 없음 - profileData:', profileData);
+            Alert.alert('오류', '사용자 ID가 없습니다.');
+            return;
+        }
+        
+        console.log('사용할 userId:', userId);
+
+        setIsLoading(true);
+        
+        try {
+            const requestData = {
+                id: userId,
+                nickname: profileData.nickname,
+                address: {
+                    city: profileData.address?.city || '',
+                    district: profileData.address?.district || ''
+                },
+                activeAddress: {
+                    city: profileData.activeAddress?.city || profileData.address?.city || '',
+                    district: profileData.activeAddress?.district || profileData.address?.district || ''
+                },
+                job: profileData.job,
+                height: profileData.height,
+                isSmoking: profileData.isSmoking,
+                isDrinking: profileData.isDrinking,
+                religion: profileData.religion,
+                biography: profileData.biography,
+                hashtags: hashtags
+            };
+
+            console.log('전송할 프로필 데이터:', requestData);
+
+            const response = await fetch('http://localhost:8080/signup/user-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('프로필 등록 성공:', result);
+                
+                Alert.alert(
+                    '프로필 등록 완료',
+                    '프로필이 성공적으로 등록되었습니다.',
+                    [{
+                        text: '확인',
+                        onPress: () => navigation.navigate('PhotoUploadScreen', { ...profileData, hashtags })
+                    }]
+                );
+            } else {
+                const errorData = await response.json();
+                Alert.alert('오류', errorData.message || '프로필 등록에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('프로필 등록 오류:', error);
+            Alert.alert('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleNext = () => {
-        console.log('Hashtags:', hashtags);
-        navigation.navigate('PhotoUploadScreen');
+        if (hashtags.length > 0) {
+            submitProfileData();
+        }
     };
 
     const handleAddHashtag = () => {
@@ -44,7 +128,7 @@ const HashtagInputScreen = () => {
         }
 
         // 최대 10개까지만 추가
-        if (hashtags.length < 10) {
+        if (hashtags.length < 5) {
             setHashtags([...hashtags, trimmedInput]);
             setHashtagInput('');
         }
@@ -61,7 +145,7 @@ const HashtagInputScreen = () => {
         }
     };
 
-    const isNextButtonActive = hashtags.length > 0;
+    const isNextButtonActive = hashtags.length > 0 && !isLoading;
 
     return (
         <Wrapper>
@@ -138,11 +222,11 @@ const HashtagInputScreen = () => {
 
                     <NextButton
                         onPress={handleNext}
-                        disabled={!isNextButtonActive}
+                        disabled={!isNextButtonActive || isLoading}
                         isActive={isNextButtonActive}
                     >
                         <NextButtonText isActive={isNextButtonActive}>
-                            다음
+                            {isLoading ? '프로필 등록 중...' : '다음'}
                         </NextButtonText>
                     </NextButton>
                 </ButtonRow>

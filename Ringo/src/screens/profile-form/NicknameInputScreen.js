@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -12,6 +12,10 @@ const { width } = Dimensions.get('window');
 
 const NicknameInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const previousData = route.params || {};
+    
+    console.log('NicknameInputScreen - 받은 previousData:', previousData);
     const [nickname, setNickname] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(null); // null: 미확인, true: 중복, false: 사용가능
     const [showModal, setShowModal] = useState(false);
@@ -39,7 +43,14 @@ const NicknameInputScreen = () => {
     const handleNext = () => {
         // 다음 화면으로 이동
         console.log('Nickname:', nickname);
-        navigation.navigate('LocationSelectScreen');
+        
+        const profileData = {
+            ...previousData,
+            nickname: nickname
+        };
+        
+        console.log('NicknameInputScreen - 전달할 profileData:', profileData);
+        navigation.navigate('LocationSelectScreen', profileData);
     };
 
     const isNextButtonActive = isDuplicate === false; // 중복확인 성공 시에만 활성화

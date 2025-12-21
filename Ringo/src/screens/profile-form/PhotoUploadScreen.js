@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, Alert, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 import Background from "../../components/Background";
@@ -15,7 +15,13 @@ const { width } = Dimensions.get('window');
 
 const PhotoUploadScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const profileData = route.params || {};
+    
+    console.log('PhotoUploadScreen - 받은 profileData:', profileData);
+    
     const [profileImage, setProfileImage] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleBack = () => {
         navigation.goBack();
@@ -90,13 +96,87 @@ const PhotoUploadScreen = () => {
         });
     };
 
-    const handleNext = () => {
+    // 프로필 사진 서버 업로드
+    const uploadProfileImage = async () => {
         if (!profileImage) {
             Alert.alert('알림', '프로필 사진을 선택해주세요.');
             return;
         }
-        console.log('Profile Image:', profileImage);
-        navigation.navigate('FeedPhotoUploadScreen');
+
+        setIsUploading(true);
+        
+        try {
+            const userId = profileData.userId || profileData.registeredUserId;
+            
+            if (!userId) {
+                Alert.alert('오류', '사용자 ID가 없습니다.');
+                return;
+            }
+
+            const formData = new FormData();
+            
+            // userId 추가 (숫자 타입)
+            formData.append('userId', parseInt(userId));
+            
+            // React Native에서 파일 업로드 시 올바른 형식
+            formData.append('image', {
+                uri: profileImage.uri,
+                type: profileImage.type || 'image/jpeg',
+                name: profileImage.name || 'profile.jpg'
+            });
+
+            console.log('프로필 사진 업로드 시작:', {
+                userId: parseInt(userId),
+                image: {
+                    uri: profileImage.uri,
+                    type: profileImage.type || 'image/jpeg',
+                    name: profileImage.name || 'profile.jpg'
+                }
+            });
+
+            const response = await fetch('http://localhost:8080/profiles', {
+                method: 'POST',
+                // React Native에서 multipart/form-data 사용 시 Content-Type 헤더 제거
+                body: formData
+            });
+
+            console.log('응답 상태:', response.status);
+            console.log('응답 헤더:', response.headers);
+
+            if (response.status === 201) {
+                const responseData = await response.text();
+                console.log('프로필 사진 업로드 성공:', responseData);
+                
+                Alert.alert(
+                    '업로드 완료',
+                    '프로필 사진이 성공적으로 업로드되었습니다.',
+                    [{
+                        text: '확인',
+                        onPress: () => navigation.navigate('FeedPhotoUploadScreen', profileData)
+                    }]
+                );
+            } else {
+                const errorData = await response.text();
+                console.log('프로필 사진 업로드 실패:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorData
+                });
+                Alert.alert(
+                    '업로드 실패', 
+                    `상태코드: ${response.status}\n${errorData || '프로필 사진 업로드에 실패했습니다.'}`
+                );
+            }
+        } catch (error) {
+            console.error('프로필 사진 업로드 오류:', error);
+            Alert.alert('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleNext = () => {
+        uploadProfileImage();
     };
 
     return (
@@ -152,8 +232,14 @@ const PhotoUploadScreen = () => {
                             <ReUploadButtonText>재등록</ReUploadButtonText>
                         </ReUploadButton>
 
-                        <SubmitButton onPress={handleNext}>
-                            <SubmitButtonText>등록하기</SubmitButtonText>
+                        <SubmitButton 
+                            onPress={handleNext}
+                            disabled={isUploading}
+                            isUploading={isUploading}
+                        >
+                            <SubmitButtonText isUploading={isUploading}>
+                                {isUploading ? '업로드 중...' : '등록하기'}
+                            </SubmitButtonText>
                         </SubmitButton>
                     </ButtonRowFixed>
                 )}
@@ -319,14 +405,15 @@ const ReUploadButtonText = styled(PtdBText)`
 const SubmitButton = styled.TouchableOpacity`
     flex: 3;
     height: ${width * 0.13}px;
-    background-color: ${colors.primary || '#14C871'};
+    background-color: ${props => props.isUploading ? '#B0B0B0' : (colors.primary || '#14C871')};
     border-radius: 12px;
     justify-content: center;
     align-items: center;
+    opacity: ${props => props.disabled ? 0.7 : 1};
 `;
 
 const SubmitButtonText = styled(PtdBText)`
-    color: #FFFFFF;
+    color: ${props => props.isUploading ? '#FFFFFF' : '#FFFFFF'};
     font-size: ${width * 0.04}px;
     font-weight: bold;
 `;

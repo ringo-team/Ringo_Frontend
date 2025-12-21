@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 
 import Background from "../../components/Background";
@@ -13,6 +13,10 @@ const { width } = Dimensions.get('window');
 
 const ProfileFormScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { registeredUserId } = route.params || {};
+    
+    console.log('ProfileFormScreen - registeredUserId:', registeredUserId);
     const [selectedGender, setSelectedGender] = useState(null); // 'male' or 'female'
     const [birthDate, setBirthDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -38,7 +42,15 @@ const ProfileFormScreen = () => {
         // 다음 화면으로 이동
         console.log('Selected Gender:', selectedGender);
         console.log('Birth Date:', birthDate);
-        navigation.navigate('NicknameInputScreen');
+        
+        const profileData = {
+            registeredUserId,
+            gender: selectedGender,
+            birthDate: birthDate.toISOString().split('T')[0] // YYYY-MM-DD 형식
+        };
+        
+        console.log('ProfileFormScreen - 전달할 profileData:', profileData);
+        navigation.navigate('NicknameInputScreen', profileData);
     };
 
     const isNextButtonActive = selectedGender !== null;

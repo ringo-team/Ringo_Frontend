@@ -7,6 +7,7 @@ import {
   Dimensions,
   ScrollView,
   StatusBar,
+  Modal,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
@@ -27,8 +28,32 @@ const { width, height } = Dimensions.get('window');
 const ProfilePreviewScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('사진');
+  const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   const profileImages = [SampleImage1, SampleImage2, GirlProfileImage];
+
+  const openImageModal = (index) => {
+    setSelectedImageIndex(index % profileImages.length);
+    setIsImageModalVisible(true);
+  };
+
+  const closeImageModal = () => {
+    setIsImageModalVisible(false);
+    setSelectedImageIndex(-1);
+  };
+
+  const goToPreviousImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === 0 ? profileImages.length - 1 : prev - 1
+    );
+  };
+
+  const goToNextImage = () => {
+    setSelectedImageIndex((prev) => 
+      prev === profileImages.length - 1 ? 0 : prev + 1
+    );
+  };
 
   const renderPhotosContent = () => {
     // 3x3 그리드를 위해 9개 사진만 사용
@@ -39,7 +64,9 @@ const ProfilePreviewScreen = () => {
         <PhotoGrid>
           {gridImages.map((image, index) => (
             <PhotoGridItem key={index}>
-              <GridPhoto source={image} />
+              <TouchableOpacity onPress={() => openImageModal(index)}>
+                <GridPhoto source={image} />
+              </TouchableOpacity>
             </PhotoGridItem>
           ))}
         </PhotoGrid>
@@ -151,7 +178,7 @@ const ProfilePreviewScreen = () => {
       {/* 고정 버튼들 */}
       <FixedHeader>
         <BackButton onPress={() => navigation.goBack()}>
-          <BackButtonText>›</BackButtonText>
+          <BackButtonText>‹</BackButtonText>
         </BackButton>
         <NotificationButton>
           <NotificationIcon source={ProfileReportIcon} />
@@ -166,6 +193,46 @@ const ProfilePreviewScreen = () => {
           <FloatingButtonText style={{ color: 'white' }}>마이페이지 가기</FloatingButtonText>
         </FloatingButton>
       </FixedFloatingButtons>
+      
+      {/* 이미지 확대 모달 */}
+      <Modal
+        visible={isImageModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeImageModal}
+      >
+        <ImageModalContainer>
+          <ImageModalBackground onPress={closeImageModal}>
+            <ImageModalContent>
+              <CloseButton onPress={closeImageModal}>
+                <CloseButtonText>×</CloseButtonText>
+              </CloseButton>
+              
+              <ImageContainer>
+                <NavigationButton 
+                  style={{ left: width * 0.05 }}
+                  onPress={goToPreviousImage}
+                >
+                  <NavigationButtonText>‹</NavigationButtonText>
+                </NavigationButton>
+                
+                <ModalImage source={profileImages[selectedImageIndex]} />
+                
+                <NavigationButton 
+                  style={{ right: width * 0.05 }}
+                  onPress={goToNextImage}
+                >
+                  <NavigationButtonText>›</NavigationButtonText>
+                </NavigationButton>
+              </ImageContainer>
+              
+              <ImageDescription>
+                이 사진은 영국에서부터 온 사진으로 제가 정말 좋아하는 사진입니다
+              </ImageDescription>
+            </ImageModalContent>
+          </ImageModalBackground>
+        </ImageModalContainer>
+      </Modal>
     </View>
   );
 };
@@ -464,4 +531,87 @@ const FloatingButton = styled.TouchableOpacity`
 const FloatingButtonText = styled.Text`
   font-size: ${width * 0.035}px;
   font-weight: 600;
+`;
+
+// 이미지 모달 관련 스타일 컴포넌트들
+const ImageModalContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ImageModalBackground = styled.TouchableOpacity`
+  flex: 1;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+`;
+
+const ImageModalContent = styled.View`
+  width: ${width * 0.9}px;
+  max-height: ${height * 0.8}px;
+  background-color: white;
+  border-radius: ${width * 0.05}px;
+  padding: ${width * 0.05}px;
+  align-items: center;
+`;
+
+const CloseButton = styled.TouchableOpacity`
+  position: absolute;
+  top: ${width * 0.03}px;
+  right: ${width * 0.03}px;
+  width: ${width * 0.08}px;
+  height: ${width * 0.08}px;
+  border-radius: ${width * 0.04}px;
+  background-color: rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+`;
+
+const CloseButtonText = styled.Text`
+  font-size: ${width * 0.05}px;
+  color: #666;
+  font-weight: bold;
+`;
+
+const ImageContainer = styled.View`
+  position: relative;
+  width: 100%;
+  align-items: center;
+  margin: ${width * 0.05}px 0;
+`;
+
+const NavigationButton = styled.TouchableOpacity`
+  position: absolute;
+  top: 50%;
+  width: ${width * 0.1}px;
+  height: ${width * 0.1}px;
+  border-radius: ${width * 0.05}px;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+`;
+
+const NavigationButtonText = styled.Text`
+  font-size: ${width * 0.06}px;
+  color: white;
+  font-weight: bold;
+`;
+
+const ModalImage = styled.Image`
+  width: ${width * 0.7}px;
+  height: ${width * 0.8}px;
+  border-radius: ${width * 0.03}px;
+  resize-mode: contain;
+`;
+
+const ImageDescription = styled.Text`
+  font-size: ${width * 0.035}px;
+  color: #333;
+  text-align: center;
+  line-height: ${width * 0.05}px;
+  margin-top: ${width * 0.03}px;
 `;
