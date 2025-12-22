@@ -66,7 +66,7 @@ const MypageScreen = () => {
             <StatNumber style={{ color: '#8B5CF6' }}>6</StatNumber>
           </StatInfo>
         </StatCard>
-        <StatCard style={{ backgroundColor: '#EEF2FF' }}>
+        <StatCard style={{ backgroundColor: '#EEF2FF' }} onPress={() => navigation.navigate('SentConnectionsScreen')}>
           <StatIconContainer>
             <StatIcon source={HeartSendIcon} />
           </StatIconContainer>
