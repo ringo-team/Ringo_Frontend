@@ -11,6 +11,8 @@ const CustomButton = ({
     onPress,
     title = '다음',
     isActive = false,
+    activeColor = "#14C871",
+    inactiveColor = colors.gray100,
     style,
 }) => {
     const handlePress = () => {
@@ -21,6 +23,8 @@ const CustomButton = ({
             <Button 
                 onPress={handlePress} 
                 isActive={isActive}
+                activeColor={activeColor}
+                inactiveColor={inactiveColor}
                 style={style}
                 disabled={!isActive}
                 activeOpacity={0.8}>
@@ -39,8 +43,8 @@ const Wrapper = styled.View`
 `;
 
 const Button = styled.TouchableOpacity`
-  background-color: ${({ isActive }) =>
-    isActive ? "#14C871" : colors.gray100};
+  background-color: ${({ isActive, activeColor, inactiveColor }) =>
+    isActive ? activeColor : inactiveColor};
   padding: 12px 24px;
   border-radius: 8px;
   opacity: ${({ isActive }) => (isActive ? 1 : 0.8)};

@@ -7,7 +7,6 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
-import BackIcon from "../../assets/imgs/icons/back.svg";
 
 const feedExampleImage = require('../../assets/imgs/feed_example.png');
 
@@ -17,10 +16,6 @@ const FeedPhotoUploadScreen = () => {
     const navigation = useNavigation();
     const [feedImages, setFeedImages] = useState([]);
     const [feedDescriptions, setFeedDescriptions] = useState({});
-
-    const handleBack = () => {
-        navigation.goBack();
-    };
 
     const handleImagePicker = () => {
         const remainingSlots = 9 - feedImages.length;
@@ -94,24 +89,28 @@ const FeedPhotoUploadScreen = () => {
         // navigation.navigate('NextScreen');
     };
 
+    const StepIndicator = ({ currentStep, totalSteps}) => {
+        return (
+            <Indicator>
+                <IndicatorText>
+                    {currentStep} 
+                    <DividerText> / {totalSteps} </DividerText>
+                </IndicatorText>
+            </Indicator>
+        )
+    };
+
     const isNextButtonActive = feedImages.length > 0;
 
     return (
         <Wrapper>
             <Background />
             <Content>
-                <Header>
-                    <BackButton onPress={handleBack}>
-                        <BackIcon width={width * 0.06} height={width * 0.06} />
-                    </BackButton>
-                    <HeaderTitle>프로필 입력</HeaderTitle>
-                </Header>
+                <TitleContainer>
+                    <Title>프로필 입력</Title>
+                </TitleContainer>
 
-                <StepIndicator>
-                    <StepText>9</StepText>
-                    <StepDivider>/</StepDivider>
-                    <StepTotal>9</StepTotal>
-                </StepIndicator>
+                <StepIndicator currentStep={9} totalSteps={9}/>
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -178,50 +177,35 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-    padding-top: ${width * 0.15}px;
+    padding: ${width * 0.08}px;
 `;
 
-const Header = styled.View`
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: ${width * 0.06}px;
-    justify-content: flex-start;
+const TitleContainer = styled.View`
+    margin-top: ${width * 0.12}px;
+    margin-left: ${width * 0.1}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
-const BackButton = styled.TouchableOpacity`
-    padding: ${width * 0.02}px;
-    margin-right: ${width * 0.03}px;
-`;
-
-const HeaderTitle = styled(PtdBText)`
+const Title = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const StepIndicator = styled.View`
-    flex-direction: row;
-    align-items: baseline;
-    margin-bottom: ${width * 0.06}px;
+const Indicator = styled.View`
+    align-items: left;
+    margin-bottom: ${width * 0.034}px;
 `;
-
-const StepText = styled(PtdBText)`
-    font-size: 18px;
+    
+const IndicatorText = styled(PtdBText)`
+    font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const StepDivider = styled(PtdBText)`
-    font-size: 18px;
-    color: #CCCCCC;
-    margin: 0 ${width * 0.01}px;
-    font-weight: bold;
-`;
-
-const StepTotal = styled(PtdBText)`
-    font-size: 18px;
-    color: #CCCCCC;
+const DividerText = styled(PtdBText)`
+    font-size: ${width * 0.045}px;
+    color: ${colors.gray100};
     font-weight: bold;
 `;
 
@@ -282,14 +266,16 @@ const FeedGridContainer = styled.View`
 `;
 
 const FeedGrid = styled.View`
+    width: 100%;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: ${width * 0.02}px;
+    justify-content: space-between;
 `;
 
 const FeedImageWrapper = styled.TouchableOpacity`
-    width: ${(width - width * 0.1 - width * 0.04) / 3}px;
-    height: ${(width - width * 0.1 - width * 0.04) / 3}px;
+    width: 32%;
+    aspect-ratio: 1;
+    margin-bottom: ${width * 0.02}px;
     position: relative;
 `;
 
