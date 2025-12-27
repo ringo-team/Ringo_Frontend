@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
-import BackIcon from "../../assets/imgs/icons/back.svg";
+import CustomButton from "../../components/CustomButton";
 
 const { width } = Dimensions.get('window');
 
@@ -14,10 +14,6 @@ const InfoInputScreen = () => {
     const navigation = useNavigation();
     const [job, setJob] = useState('');
     const [height, setHeight] = useState('');
-
-    const handleBack = () => {
-        navigation.goBack();
-    };
 
     const handlePrevious = () => {
         navigation.goBack();
@@ -29,24 +25,28 @@ const InfoInputScreen = () => {
         navigation.navigate('PreferenceInputScreen');
     };
 
+    const StepIndicator = ({ currentStep, totalSteps}) => {
+        return (
+            <Indicator>
+                <IndicatorText>
+                    {currentStep} 
+                    <DividerText> / {totalSteps} </DividerText>
+                </IndicatorText>
+            </Indicator>
+        )
+    };
+
     const isNextButtonActive = job.trim() !== '' && height.trim() !== '';
 
     return (
         <Wrapper>
             <Background />
             <Content>
-                <Header>
-                    <BackButton onPress={handleBack}>
-                        <BackIcon width={width * 0.06} height={width * 0.06} />
-                    </BackButton>
-                    <HeaderTitle>프로필 입력</HeaderTitle>
-                </Header>
+                <TitleContainer>
+                    <Title>프로필 입력</Title>
+                </TitleContainer>
 
-                <StepIndicator>
-                    <StepText>4</StepText>
-                    <StepDivider>/</StepDivider>
-                    <StepTotal>9</StepTotal>
-                </StepIndicator>
+                <StepIndicator currentStep={4} totalSteps={9}/>
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -80,21 +80,23 @@ const InfoInputScreen = () => {
                     </HeightInputContainer>
                 </Section>
 
-                <ButtonRow>
-                    <PreviousButton onPress={handlePrevious}>
-                        <ButtonText>이전</ButtonText>
-                    </PreviousButton>
-
-                    <NextButton
-                        onPress={handleNext}
+                <ButtonContainer>
+                    <CustomButton
+                        title="이전"
+                        isActive={true}
+                        activeColor={colors.gray100}
+                        onPress={handlePrevious}
+                        style={{height: width * 0.13, borderRadius: 12}}
+                    />
+                    
+                    <CustomButton
+                        title="다음"
                         disabled={!isNextButtonActive}
                         isActive={isNextButtonActive}
-                    >
-                        <NextButtonText isActive={isNextButtonActive}>
-                            다음
-                        </NextButtonText>
-                    </NextButton>
-                </ButtonRow>
+                        onPress={handleNext}
+                        style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                    />
+                </ButtonContainer>
             </Content>
         </Wrapper>
     );
@@ -106,50 +108,35 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-    padding-top: ${width * 0.15}px;
+    padding: ${width * 0.08}px;
 `;
 
-const Header = styled.View`
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: ${width * 0.06}px;
-    justify-content: flex-start;
+const TitleContainer = styled.View`
+    margin-top: ${width * 0.12}px;
+    margin-left: ${width * 0.1}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
-const BackButton = styled.TouchableOpacity`
-    padding: ${width * 0.02}px;
-    margin-right: ${width * 0.03}px;
-`;
-
-const HeaderTitle = styled(PtdBText)`
+const Title = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const StepIndicator = styled.View`
-    flex-direction: row;
-    align-items: baseline;
-    margin-bottom: ${width * 0.06}px;
+const Indicator = styled.View`
+    align-items: left;
+    margin-bottom: ${width * 0.034}px;
 `;
-
-const StepText = styled(PtdBText)`
-    font-size: 18px;
+    
+const IndicatorText = styled(PtdBText)`
+    font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const StepDivider = styled(PtdBText)`
-    font-size: 18px;
-    color: #CCCCCC;
-    margin: 0 ${width * 0.01}px;
-    font-weight: bold;
-`;
-
-const StepTotal = styled(PtdBText)`
-    font-size: 18px;
-    color: #CCCCCC;
+const DividerText = styled(PtdBText)`
+    font-size: ${width * 0.045}px;
+    color: ${colors.gray100};
     font-weight: bold;
 `;
 
@@ -212,34 +199,10 @@ const ButtonRow = styled.View`
     margin-bottom: ${width * 0.05}px;
 `;
 
-const PreviousButton = styled.TouchableOpacity`
-    flex: 1;
-    height: ${width * 0.13}px;
-    background-color: #E0E0E0;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-`;
-
-const ButtonText = styled(PtdBText)`
-    color: #FFFFFF;
-    font-size: ${width * 0.04}px;
-    font-weight: bold;
-`;
-
-const NextButton = styled.TouchableOpacity`
-    flex: 3;
-    height: ${width * 0.13}px;
-    background-color: ${props => props.isActive ? colors.primary || '#14C871' : '#E0E0E0'};
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    opacity: ${props => props.disabled ? 0.5 : 1};
-`;
-
-const NextButtonText = styled(PtdBText)`
-    color: ${props => props.isActive ? '#FFFFFF' : '#999999'};
-    font-size: ${width * 0.04}px;
+const ButtonContainer = styled.View`
+    flex-direction: row;
+    margin-top: auto;
+    margin-bottom: ${width * 0.05}px;
 `;
 
 export default InfoInputScreen;
