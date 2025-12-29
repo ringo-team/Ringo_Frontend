@@ -17,7 +17,7 @@ const BackButton = ({ onPress }) => {
         <TouchableOpacity
             onPress={handlePress}
             style={{
-                paddingLeft: width * 0.06,
+                paddingLeft: width * 0.03,
                 marginTop: height * 0.03,
             }}  >
             <BackIcon width={iconSize} height={iconSize} />

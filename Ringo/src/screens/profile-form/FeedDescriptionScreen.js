@@ -6,7 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
-import BackIcon from "../../assets/imgs/icons/back.svg";
+import CustomButton from "../../components/CustomButton";
 
 const { width } = Dimensions.get('window');
 
@@ -16,10 +16,6 @@ const FeedDescriptionScreen = () => {
     const { imageUri, imageIndex, onSave } = route.params;
 
     const [description, setDescription] = useState('');
-
-    const handleBack = () => {
-        navigation.goBack();
-    };
 
     const handleSave = () => {
         if (onSave) {
@@ -38,12 +34,9 @@ const FeedDescriptionScreen = () => {
         <Wrapper>
             <Background />
             <Content>
-                <Header>
-                    <BackButton onPress={handleBack}>
-                        <BackIcon width={width * 0.06} height={width * 0.06} />
-                    </BackButton>
-                    <HeaderTitle>프로필 입력</HeaderTitle>
-                </Header>
+                <TitleContainer>
+                    <Title>프로필 입력</Title>
+                </TitleContainer>
 
                 <MainTitle>
                     회원님의 순간을{"\n"}
@@ -68,10 +61,14 @@ const FeedDescriptionScreen = () => {
                     textAlignVertical="top"
                     maxLength={100}
                 />
-
-                <SaveButton onPress={handleSave}>
-                    <SaveButtonText>완료</SaveButtonText>
-                </SaveButton>
+                <ButtonContainer>
+                    <CustomButton
+                        title="완료"
+                        isActive={true}
+                        onPress={handleSave}
+                        style={{width:"100%", height: width * 0.13, borderRadius: 12}}
+                    />
+                </ButtonContainer>
             </Content>
         </Wrapper>
     );
@@ -83,23 +80,16 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.05}px;
-    padding-top: ${width * 0.15}px;
+    padding: ${width * 0.08}px;
 `;
 
-const Header = styled.View`
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: ${width * 0.06}px;
-    justify-content: flex-start;
+const TitleContainer = styled.View`
+    margin-top: ${width * 0.12}px;
+    margin-left: ${width * 0.1}px;
+    margin-bottom: ${width * 0.1}px;
 `;
 
-const BackButton = styled.TouchableOpacity`
-    padding: ${width * 0.02}px;
-    margin-right: ${width * 0.03}px;
-`;
-
-const HeaderTitle = styled(PtdBText)`
+const Title = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
@@ -157,20 +147,10 @@ const DescriptionInput = styled.TextInput`
     margin-bottom: ${width * 0.03}px;
 `;
 
-const SaveButton = styled.TouchableOpacity`
-    width: 100%;
-    height: ${width * 0.13}px;
-    background-color: ${colors.primary || '#14C871'};
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
-    margin-top: ${width * 0.02}px;
-`;
-
-const SaveButtonText = styled(PtdBText)`
-    color: #FFFFFF;
-    font-size: ${width * 0.04}px;
-    font-weight: bold;
+const ButtonContainer = styled.View`
+    flex-direction: row;
+    margin-top: auto;
+    margin-bottom: ${width * 0.05}px;
 `;
 
 export default FeedDescriptionScreen;
