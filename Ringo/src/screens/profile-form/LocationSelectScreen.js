@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, ScrollView, Modal, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -13,6 +13,10 @@ const { width } = Dimensions.get('window');
 
 const LocationSelectScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const previousData = route.params || {};
+    
+    console.log('LocationSelectScreen - Received data:', previousData);
 
     // 거주지
     const [residenceProvince, setResidenceProvince] = useState("");
@@ -62,9 +66,19 @@ const LocationSelectScreen = () => {
     };
 
     const handleNext = () => {
-        console.log('Residence:', residenceProvince, residenceDistrict);
-        console.log('Activity:', activityProvince, activityDistrict);
-        navigation.navigate('InfoInputScreen');
+        const profileData = {
+            ...previousData,
+            address: {
+                city: residenceProvince,
+                district: residenceDistrict
+            },
+            activeAddress: {
+                city: activityProvince,
+                district: activityDistrict
+            }
+        };
+        console.log('LocationSelectScreen - Sending data:', profileData);
+        navigation.navigate('InfoInputScreen', profileData);
     };
 
     const StepIndicator = ({ currentStep, totalSteps}) => {

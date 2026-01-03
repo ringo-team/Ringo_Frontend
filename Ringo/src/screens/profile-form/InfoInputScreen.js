@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -12,6 +12,11 @@ const { width } = Dimensions.get('window');
 
 const InfoInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const previousData = route.params || {};
+    
+    console.log('InfoInputScreen - Received data:', previousData);
+    
     const [job, setJob] = useState('');
     const [height, setHeight] = useState('');
 
@@ -20,9 +25,13 @@ const InfoInputScreen = () => {
     };
 
     const handleNext = () => {
-        console.log('Job:', job);
-        console.log('Height:', height);
-        navigation.navigate('PreferenceInputScreen');
+        const profileData = {
+            ...previousData,
+            job,
+            height
+        };
+        console.log('InfoInputScreen - Sending data:', profileData);
+        navigation.navigate('PreferenceInputScreen', profileData);
     };
 
     const StepIndicator = ({ currentStep, totalSteps}) => {

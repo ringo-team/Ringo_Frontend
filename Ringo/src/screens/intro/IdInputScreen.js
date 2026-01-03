@@ -40,10 +40,27 @@ const IdInputScreen = () => {
     };
 
     // 중복확인
-    const handleDuplicateCheck = () => {
-        // 조건을 만족하면 항상 사용 가능하다고 설정
-        setIsDuplicateChecked(true);
-        setModalMessage("사용 가능한 아이디입니다.");
+    const handleDuplicateCheck = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/signup/check-loginId?email=${userId}`);
+            const result = await response.json();
+            
+            if (response.ok) {
+                // 성공 응답 (사용 가능한 아이디)
+                setIsDuplicateChecked(true);
+                setModalMessage("사용 가능한 아이디입니다.");
+            } else {
+                // 중복된 아이디
+                setIsDuplicateChecked(false);
+                setModalMessage("이미 사용 중인 아이디입니다.");
+            }
+        } catch (error) {
+            // 네트워크 오류 등
+            console.error('아이디 중복확인 오류:', error);
+            setIsDuplicateChecked(false);
+            setModalMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+        
         setShowModal(true);
     };
 
@@ -53,7 +70,7 @@ const IdInputScreen = () => {
     };    // 다음 버튼 클릭
     const handleNext = () => {
         if (isDuplicateChecked) {
-            navigation.navigate('PasswordInputScreen');
+            navigation.navigate('PasswordInputScreen', { userId: userId });
         }
     };
 

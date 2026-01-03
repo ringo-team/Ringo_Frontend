@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -12,6 +12,11 @@ const { width } = Dimensions.get('window');
 
 const IntroductionScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const previousData = route.params || {};
+    
+    console.log('IntroductionScreen - Received data:', previousData);
+    
     const [introduction, setIntroduction] = useState('');
 
     const handlePrevious = () => {
@@ -19,8 +24,12 @@ const IntroductionScreen = () => {
     };
 
     const handleNext = () => {
-        console.log('Introduction:', introduction);
-        navigation.navigate('HashtagInputScreen');
+        const profileData = {
+            ...previousData,
+            introduction
+        };
+        console.log('IntroductionScreen - Sending data:', profileData);
+        navigation.navigate('HashtagInputScreen', profileData);
     };
 
     const StepIndicator = ({ currentStep, totalSteps}) => {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -13,6 +13,11 @@ const { width } = Dimensions.get('window');
 
 const PreferenceInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const previousData = route.params || {};
+    
+    console.log('PreferenceInputScreen - Received data:', previousData);
+    
     const [drinking, setDrinking] = useState('');
     const [smoking, setSmoking] = useState('');
     const [religion, setReligion] = useState('');
@@ -22,10 +27,14 @@ const PreferenceInputScreen = () => {
     };
 
     const handleNext = () => {
-        console.log('Drinking:', drinking);
-        console.log('Smoking:', smoking);
-        console.log('Religion:', religion);
-        navigation.navigate('IntroductionScreen');
+        const profileData = {
+            ...previousData,
+            isDrinking: drinking,
+            isSmoking: smoking,
+            religion: religion
+        };
+        console.log('PreferenceInputScreen - Sending data:', profileData);
+        navigation.navigate('IntroductionScreen', profileData);
     };
 
     const StepIndicator = ({ currentStep, totalSteps}) => {
@@ -64,46 +73,46 @@ const PreferenceInputScreen = () => {
                         <SectionLabel>음주</SectionLabel>
                         <OptionsGrid>
                             <OptionButton
-                                selected={drinking === '주 5-7회'}
-                                onPress={() => setDrinking('주 5-7회')}
+                                selected={drinking === 'ALWAYS'}
+                                onPress={() => setDrinking('ALWAYS')}
                             >
-                                <OptionText selected={drinking === '주 5-7회'}>
+                                <OptionText selected={drinking === 'ALWAYS'}>
                                     주 5-7회
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={drinking === '주 3-4회'}
-                                onPress={() => setDrinking('주 3-4회')}
+                                selected={drinking === 'OFTEN'}
+                                onPress={() => setDrinking('OFTEN')}
                             >
-                                <OptionText selected={drinking === '주 3-4회'}>
+                                <OptionText selected={drinking === 'OFTEN'}>
                                     주 3-4회
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={drinking === '주 1-2회'}
-                                onPress={() => setDrinking('주 1-2회')}
+                                selected={drinking === 'RARELY'}
+                                onPress={() => setDrinking('RARELY')}
                             >
-                                <OptionText selected={drinking === '주 1-2회'}>
+                                <OptionText selected={drinking === 'RARELY'}>
                                     주 1-2회
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={drinking === '필요할 때만'}
-                                onPress={() => setDrinking('필요할 때만')}
+                                selected={drinking === 'ON_NEED'}
+                                onPress={() => setDrinking('ON_NEED')}
                             >
-                                <OptionText selected={drinking === '필요할 때만'}>
+                                <OptionText selected={drinking === 'ON_NEED'}>
                                     필요할 때만
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={drinking === '절대 마시지 않음'}
-                                onPress={() => setDrinking('절대 마시지 않음')}
+                                selected={drinking === 'NEVER'}
+                                onPress={() => setDrinking('NEVER')}
                             >
-                                <OptionText selected={drinking === '절대 마시지 않음'}>
+                                <OptionText selected={drinking === 'NEVER'}>
                                     절대 마시지 않음
                                 </OptionText>
                             </OptionButton>
@@ -114,38 +123,38 @@ const PreferenceInputScreen = () => {
                         <SectionLabel>흡연</SectionLabel>
                         <OptionsGrid>
                             <OptionButton
-                                selected={smoking === '흡연'}
-                                onPress={() => setSmoking('흡연')}
+                                selected={smoking === 'SMOKING'}
+                                onPress={() => setSmoking('SMOKING')}
                             >
-                                <OptionText selected={smoking === '흡연'}>
+                                <OptionText selected={smoking === 'SMOKING'}>
                                     흡연
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={smoking === '비흡연'}
-                                onPress={() => setSmoking('비흡연')}
+                                selected={smoking === 'ELECTRONIC'}
+                                onPress={() => setSmoking('ELECTRONIC')}
                             >
-                                <OptionText selected={smoking === '비흡연'}>
-                                    비흡연
-                                </OptionText>
-                            </OptionButton>
-
-                            <OptionButton
-                                selected={smoking === '전자담배'}
-                                onPress={() => setSmoking('전자담배')}
-                            >
-                                <OptionText selected={smoking === '전자담배'}>
+                                <OptionText selected={smoking === 'ELECTRONIC'}>
                                     전자담배
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={smoking === '금연 중'}
-                                onPress={() => setSmoking('금연 중')}
+                                selected={smoking === 'NO_SMOKING'}
+                                onPress={() => setSmoking('NO_SMOKING')}
                             >
-                                <OptionText selected={smoking === '금연 중'}>
+                                <OptionText selected={smoking === 'NO_SMOKING'}>
                                     금연 중
+                                </OptionText>
+                            </OptionButton>
+
+                            <OptionButton
+                                selected={smoking === 'NEVER'}
+                                onPress={() => setSmoking('NEVER')}
+                            >
+                                <OptionText selected={smoking === 'NEVER'}>
+                                    비흡연
                                 </OptionText>
                             </OptionButton>
                         </OptionsGrid>
@@ -155,46 +164,46 @@ const PreferenceInputScreen = () => {
                         <SectionLabel>종교</SectionLabel>
                         <OptionsGrid>
                             <OptionButton
-                                selected={religion === '기독교'}
-                                onPress={() => setReligion('기독교')}
+                                selected={religion === 'CHRISTIANITY'}
+                                onPress={() => setReligion('CHRISTIANITY')}
                             >
-                                <OptionText selected={religion === '기독교'}>
+                                <OptionText selected={religion === 'CHRISTIANITY'}>
                                     기독교
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={religion === '불교'}
-                                onPress={() => setReligion('불교')}
+                                selected={religion === 'BUDDHISM'}
+                                onPress={() => setReligion('BUDDHISM')}
                             >
-                                <OptionText selected={religion === '불교'}>
+                                <OptionText selected={religion === 'BUDDHISM'}>
                                     불교
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={religion === '천주교'}
-                                onPress={() => setReligion('천주교')}
+                                selected={religion === 'CATHOLIC'}
+                                onPress={() => setReligion('CATHOLIC')}
                             >
-                                <OptionText selected={religion === '천주교'}>
+                                <OptionText selected={religion === 'CATHOLIC'}>
                                     천주교
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={religion === '무교'}
-                                onPress={() => setReligion('무교')}
+                                selected={religion === 'ATHEIST'}
+                                onPress={() => setReligion('ATHEIST')}
                             >
-                                <OptionText selected={religion === '무교'}>
+                                <OptionText selected={religion === 'ATHEIST'}>
                                     무교
                                 </OptionText>
                             </OptionButton>
 
                             <OptionButton
-                                selected={religion === '기타'}
-                                onPress={() => setReligion('기타')}
+                                selected={religion === 'ETC'}
+                                onPress={() => setReligion('ETC')}
                             >
-                                <OptionText selected={religion === '기타'}>
+                                <OptionText selected={religion === 'ETC'}>
                                     기타
                                 </OptionText>
                             </OptionButton>

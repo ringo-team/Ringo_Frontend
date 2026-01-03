@@ -3,15 +3,15 @@ import styled from "styled-components/native";
 import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 
-const SnapScreen = () => {
+const ChatScreen = () => {
     return (
         <Container>
-            <Title>Snap Screen</Title>
+            <Title>Chat Screen</Title>
         </Container>
     );
 };
 
-export default SnapScreen;
+export default ChatScreen;
 
 const Container = styled.View`
   flex: 1;

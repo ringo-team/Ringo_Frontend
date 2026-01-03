@@ -3,15 +3,15 @@ import styled from "styled-components/native";
 import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 
-const SnapScreen = () => {
+const MatchingScreen = () => {
     return (
         <Container>
-            <Title>Snap Screen</Title>
+            <Title>Matching Screen</Title>
         </Container>
     );
 };
 
-export default SnapScreen;
+export default MatchingScreen;
 
 const Container = styled.View`
   flex: 1;
