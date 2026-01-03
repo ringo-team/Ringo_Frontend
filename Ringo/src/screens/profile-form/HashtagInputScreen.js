@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import CustomButton from "../../components/CustomButton";
 
@@ -14,17 +15,6 @@ const HashtagInputScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const profileData = route.params || {}; // 이전 화면들에서 전달된 프로필 정보
-
-    // 디버깅: 받은 데이터 확인
-    console.log('=== HashtagInputScreen 디버깅 ===');
-    console.log('전체 profileData:', JSON.stringify(profileData, null, 2));
-    console.log('userId:', profileData.userId);
-    console.log('registeredUserId:', profileData.registeredUserId);
-    console.log('nickname:', profileData.nickname);
-    console.log('address:', profileData.address);
-    console.log('job:', profileData.job);
-    console.log('=== 디버깅 끝 ===');
-
     const [hashtagInput, setHashtagInput] = useState('');
     const [hashtags, setHashtags] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -42,12 +32,9 @@ const HashtagInputScreen = () => {
         const userId = profileData.userId || profileData.registeredUserId;
 
         if (!userId) {
-            console.log('사용자 ID 없음 - profileData:', profileData);
             Alert.alert('오류', '사용자 ID가 없습니다.');
             return;
         }
-
-        console.log('사용할 userId:', userId);
 
         setIsLoading(true);
 
@@ -55,6 +42,7 @@ const HashtagInputScreen = () => {
             const requestData = {
                 id: userId,
                 nickname: profileData.nickname,
+                birthday: profileData.birthDate,
                 address: {
                     city: profileData.address?.city || '',
                     district: profileData.address?.district || ''
@@ -74,7 +62,7 @@ const HashtagInputScreen = () => {
 
             console.log('전송할 프로필 데이터:', requestData);
 
-            const response = await fetch('http://localhost:8080/signup/user-info', {
+            const response = await fetch(config.SIGNUP.USER_INFO, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

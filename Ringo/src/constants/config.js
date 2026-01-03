@@ -1,4 +1,4 @@
-const BASE_URL = ''; //기본 API URL
+export const BASE_URL = 'http://localhost:8080'; //기본 API URL
 
 const config = {
   API_URL: BASE_URL,
@@ -12,8 +12,15 @@ const config = {
     RESET_PASSWORD: `${BASE_URL}/users/reset-password`, //비밀번호 재발급
   },
 
-  PROFILE: {
+  SIGNUP: {
+    CHECK_LOGIN_ID: `${BASE_URL}/signup/check-loginId`, //아이디 중복 확인
+    CHECK_NICKNAME: `${BASE_URL}/signup/check-nickname`, //닉네임 중복 확인
+    REGISTER: `${BASE_URL}/signup`, //회원가입
+    USER_INFO: `${BASE_URL}/signup/user-info`, //프로필 정보 저장
+  },
 
+  PROFILE: {
+    UPLOAD: `${BASE_URL}/profiles`, //프로필 사진 업로드
   },
 
   SNAP: {
@@ -29,3 +36,5 @@ const config = {
   },
 
 };
+
+export default config;

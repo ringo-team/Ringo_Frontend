@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
 import { Dimensions, KeyboardAvoidingView, Platform, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import CustomModal from "../../components/CustomModal";
 
@@ -12,6 +13,8 @@ const { width } = Dimensions.get('window');
 
 const IdInputScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { isMarketingReceptionConsent } = route.params || {};
     const [userId, setUserId] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [showDuplicateCheck, setShowDuplicateCheck] = useState(false);
@@ -42,9 +45,9 @@ const IdInputScreen = () => {
     // 중복확인
     const handleDuplicateCheck = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/signup/check-loginId?email=${userId}`);
+            const response = await fetch(`${config.SIGNUP.CHECK_LOGIN_ID}?email=${userId}`);
             const result = await response.json();
-            
+
             if (response.ok) {
                 // 성공 응답 (사용 가능한 아이디)
                 setIsDuplicateChecked(true);
@@ -60,7 +63,7 @@ const IdInputScreen = () => {
             setIsDuplicateChecked(false);
             setModalMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
         }
-        
+
         setShowModal(true);
     };
 
@@ -70,7 +73,10 @@ const IdInputScreen = () => {
     };    // 다음 버튼 클릭
     const handleNext = () => {
         if (isDuplicateChecked) {
-            navigation.navigate('PasswordInputScreen', { userId: userId });
+            navigation.navigate('PasswordInputScreen', {
+                userId: userId,
+                isMarketingReceptionConsent
+            });
         }
     };
 
