@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, Alert, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 
 const feedExampleImage = require('../../assets/imgs/feed_example.png');
@@ -14,8 +15,12 @@ const { width } = Dimensions.get('window');
 
 const FeedPhotoUploadScreen = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const profileData = route.params || {};
+
     const [feedImages, setFeedImages] = useState([]);
     const [feedDescriptions, setFeedDescriptions] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleImagePicker = () => {
         const remainingSlots = 9 - feedImages.length;
@@ -75,25 +80,96 @@ const FeedPhotoUploadScreen = () => {
         });
     };
 
+    // 피드 사진 서버 업로드
+    const uploadFeedImages = async () => {
+        const userId = profileData.userId || profileData.registeredUserId;
+
+        if (!userId) {
+            Alert.alert('오류', '사용자 ID가 없습니다.');
+            return;
+        }
+
+        setIsUploading(true);
+
+        try {
+            const formData = new FormData();
+
+            // userId 추가
+            formData.append('userId', parseInt(userId));
+
+            // 각 이미지와 설명을 list 형식으로 추가
+            feedImages.forEach((image, index) => {
+                // 이미지 파일 추가
+                formData.append(`list[${index}].image`, {
+                    uri: image.uri,
+                    type: image.type || 'image/jpeg',
+                    name: image.name || `feed_${index}.jpg`
+                });
+
+                // 이미지 설명 추가 (없으면 빈 문자열)
+                formData.append(`list[${index}].content`, feedDescriptions[index] || '');
+            });
+
+            console.log('피드 사진 업로드 시작:', {
+                userId: parseInt(userId),
+                imageCount: feedImages.length
+            });
+
+            const response = await fetch(config.FEED.UPLOAD, {
+                method: 'POST',
+                body: formData
+            });
+
+            const responseData = await response.json();
+            console.log('피드 사진 업로드 응답:', responseData);
+
+            if (response.ok) {
+                Alert.alert(
+                    '업로드 완료',
+                    '피드 사진이 성공적으로 업로드되었습니다.',
+                    [{
+                        text: '확인',
+                        onPress: () => {
+                            // 프로필 입력 완료 - 메인 화면으로 이동
+                            navigation.reset({
+                                index: 0,
+                                routes: [{ name: 'TabNavigator' }],
+                            });
+                        }
+                    }]
+                );
+            } else {
+                Alert.alert('업로드 실패', responseData.message || '피드 사진 업로드에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('피드 사진 업로드 오류:', error);
+            Alert.alert('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const handleNext = () => {
         if (feedImages.length === 0) {
             Alert.alert('알림', '최소 1개 이상의 피드 사진을 선택해주세요.');
             return;
         }
-        console.log('Feed Images:', feedImages);
-        console.log('Feed Descriptions:', feedDescriptions);
-        // navigation.navigate('NextScreen');
+        uploadFeedImages();
     };
 
     const handleSkip = () => {
-        // navigation.navigate('NextScreen');
+        // 피드 사진 없이 다음으로 이동
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'TabNavigator' }],
+        });
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -110,7 +186,7 @@ const FeedPhotoUploadScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={9} totalSteps={9}/>
+                <StepIndicator currentStep={9} totalSteps={9} />
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -153,13 +229,13 @@ const FeedPhotoUploadScreen = () => {
                     </FeedGridContainer>
                 )}
 
-                <UploadButton onPress={handleImagePicker}>
+                <UploadButton onPress={handleImagePicker} disabled={isUploading}>
                     <UploadButtonText>사진 업로드</UploadButtonText>
                 </UploadButton>
 
                 {feedImages.length > 0 ? (
-                    <NextButton onPress={handleNext} isActive={true}>
-                        <NextButtonText isActive={true}>등록하기</NextButtonText>
+                    <NextButton onPress={handleNext} isActive={!isUploading} disabled={isUploading}>
+                        <NextButtonText isActive={true}>{isUploading ? '업로드 중...' : '등록하기'}</NextButtonText>
                     </NextButton>
                 ) : (
                     <SkipButton onPress={handleSkip}>
@@ -196,7 +272,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};

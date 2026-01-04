@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
@@ -12,12 +12,14 @@ const { width } = Dimensions.get("window");
 
 const PhoneVerificationScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { isMarketingReceptionConsent } = route.params || {};
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleVerification = () => {
     if (phoneNumber.trim()) {
       // 휴대폰 인증 로직
-      navigation.navigate("IdInputScreen");
+      navigation.navigate("IdInputScreen", { isMarketingReceptionConsent });
     }
   };
 
@@ -26,24 +28,24 @@ const PhoneVerificationScreen = () => {
   return (
     <Wrapper>
       <Background />
-        <Content>
-          <TitleContainer>
-            <Title>휴대폰 본인 인증</Title>
-          </TitleContainer>
+      <Content>
+        <TitleContainer>
+          <Title>휴대폰 본인 인증</Title>
+        </TitleContainer>
 
-          <PhoneInputContainer>
-            <PhoneInput
-              placeholder="휴대폰 번호를 입력해주세요"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType="phone-pad"
-              maxLength={11}
-            />
-          </PhoneInputContainer>
+        <PhoneInputContainer>
+          <PhoneInput
+            placeholder="휴대폰 번호를 입력해주세요"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType="phone-pad"
+            maxLength={11}
+          />
+        </PhoneInputContainer>
 
-          <Spacer />
-        </Content>
-        
+        <Spacer />
+      </Content>
+
       <ButtonContainer>
         <CustomButton
           title="휴대폰 인증하기"

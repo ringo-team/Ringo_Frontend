@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import CustomButton from "../../components/CustomButton";
 
@@ -14,17 +15,41 @@ const NicknameInputScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const previousData = route.params || {};
-    
+
     console.log('NicknameInputScreen - 받은 previousData:', previousData);
     const [nickname, setNickname] = useState('');
     const [isDuplicate, setIsDuplicate] = useState(null); // null: 미확인, true: 중복, false: 사용가능
     const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
-    const handleCheckDuplicate = () => {
-        // TODO: 실제 중복 확인 API 호출
-        // 임시로 랜덤하게 중복/사용가능 판정
-        const isAvailable = Math.random() > 0.5;
-        setIsDuplicate(!isAvailable);
+    const handleCheckDuplicate = async () => {
+        try {
+            const response = await fetch(`${config.SIGNUP.CHECK_NICKNAME}?nickname=${encodeURIComponent(nickname)}`);
+            const result = await response.json();
+
+            if (result.result === '0000') {
+                // 사용 가능한 닉네임
+                setIsDuplicate(false);
+                setModalMessage(result.message || '사용 가능한 닉네임입니다.');
+            } else if (result.result === 'E0008') {
+                // 중복된 닉네임
+                setIsDuplicate(true);
+                setModalMessage(result.message || '이미 사용 중인 닉네임입니다.');
+            } else if (result.result === 'E1000') {
+                // 서버 오류
+                setIsDuplicate(null);
+                setModalMessage('서버 오류가 발생했습니다. 다시 시도해주세요.');
+            } else {
+                // 기타 오류
+                setIsDuplicate(null);
+                setModalMessage(result.message || '오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('닉네임 중복확인 오류:', error);
+            setIsDuplicate(null);
+            setModalMessage('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+
         setShowModal(true);
     };
 
@@ -39,21 +64,21 @@ const NicknameInputScreen = () => {
     const handleNext = () => {
         // 다음 화면으로 이동
         console.log('Nickname:', nickname);
-        
+
         const profileData = {
             ...previousData,
             nickname: nickname
         };
-        
+
         console.log('NicknameInputScreen - 전달할 profileData:', profileData);
         navigation.navigate('LocationSelectScreen', profileData);
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -70,7 +95,7 @@ const NicknameInputScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={2} totalSteps={9}/>
+                <StepIndicator currentStep={2} totalSteps={9} />
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -104,15 +129,15 @@ const NicknameInputScreen = () => {
                         isActive={true}
                         activeColor={colors.gray100}
                         onPress={handlePrevious}
-                        style={{height: width * 0.13, borderRadius: 12}}
+                        style={{ height: width * 0.13, borderRadius: 12 }}
                     />
-                    
+
                     <CustomButton
                         title="다음"
                         disabled={!isNextButtonActive}
                         isActive={isNextButtonActive}
                         onPress={handleNext}
-                        style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                        style={{ width: "85%", height: width * 0.13, borderRadius: 12 }}
                     />
                 </ButtonContainer>
             </Content>
@@ -126,9 +151,7 @@ const NicknameInputScreen = () => {
                 <ModalOverlay onPress={handleModalClose}>
                     <ModalContent onPress={(e) => e.stopPropagation()}>
                         <ModalMessage>
-                            {isDuplicate
-                                ? "중복된 닉네임입니다."
-                                : "사용 가능한 닉네임입니다."}
+                            {modalMessage}
                         </ModalMessage>
                         <ModalButton onPress={handleModalClose}>
                             <ModalButtonText>확인</ModalButtonText>
@@ -165,7 +188,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};

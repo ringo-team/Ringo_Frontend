@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 
 const { width } = Dimensions.get('window');
@@ -12,8 +13,8 @@ const { width } = Dimensions.get('window');
 const PasswordInputScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { userId } = route.params || {}; // 아이디 입력 화면에서 전달받은 아이디
-    
+    const { userId, isMarketingReceptionConsent } = route.params || {}; // 아이디 입력 화면에서 전달받은 아이디 및 마케팅 동의 여부
+
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isValid, setIsValid] = useState(false);
@@ -60,14 +61,15 @@ const PasswordInputScreen = () => {
 
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:8080/signup', {
+            const response = await fetch(config.SIGNUP.REGISTER, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     email: userId,
-                    password: password
+                    password: password,
+                    isMarketingReceptionConsent: isMarketingReceptionConsent || false
                 })
             });
 
@@ -76,11 +78,11 @@ const PasswordInputScreen = () => {
                 const responseData = await response.json();
                 const newUserId = responseData.userId;
                 const resultMessage = responseData.result || '회원가입이 성공적으로 완료되었습니다.';
-                
+
                 // userId 저장
                 setRegisteredUserId(newUserId);
                 console.log('등록된 사용자 ID:', newUserId);
-                
+
                 Alert.alert(
                     '회원가입 완료',
                     resultMessage,
