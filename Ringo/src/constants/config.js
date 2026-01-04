@@ -23,6 +23,10 @@ const config = {
     UPLOAD: `${BASE_URL}/profiles`, //프로필 사진 업로드
   },
 
+  FEED: {
+    UPLOAD: `${BASE_URL}/feeds`, //피드 사진 업로드
+  },
+
   SNAP: {
 
   },
