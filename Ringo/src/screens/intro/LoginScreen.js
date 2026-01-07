@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components/native";
 import { Dimensions, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 import { ImageBackground } from 'react-native';
 
@@ -18,15 +20,73 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (userId === 'master' && password === 'qwe123') {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'TabNavigator' }],
+  // 토큰 저장
+  const saveTokens = async (accessToken, refreshToken, userId) => {
+    try {
+      // accessToken과 refreshToken을 JSON 형태로 저장 (api.js와 호환)
+      const tokenData = JSON.stringify({
+        accessToken,
+        refreshToken,
+        userId
       });
-    } else {
-      Alert.alert('로그인 실패', '아이디 또는 비밀번호가 잘못되었습니다.');
+      await Keychain.setGenericPassword('tokens', tokenData);
+      console.log('토큰 저장 성공');
+      return true;
+    } catch (error) {
+      console.error('토큰 저장 실패:', error);
+      return false;
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!userId.trim() || !password.trim()) {
+      Alert.alert('알림', '아이디와 비밀번호를 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(config.AUTH.LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: userId,
+          password: password
+        })
+      });
+
+      const responseData = await response.json();
+      console.log('로그인 응답:', responseData);
+
+      if (responseData.result === '0000') {
+        // 토큰 저장
+        const saved = await saveTokens(
+          responseData.accessToken, 
+          responseData.refreshToken,
+          responseData.userId
+        );
+        
+        if (saved) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'TabNavigator' }],
+          });
+        } else {
+          Alert.alert('오류', '로그인 정보 저장에 실패했습니다.');
+        }
+      } else {
+        Alert.alert('로그인 실패', responseData.message || '아이디 또는 비밀번호가 잘못되었습니다.');
+      }
+    } catch (error) {
+      console.error('로그인 오류:', error);
+      Alert.alert('오류', '네트워크 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,8 +131,8 @@ const LoginScreen = () => {
               </ForgotPasswordButton>
             </InputContainer>
 
-            <LoginButton onPress={handleLogin}>
-              <LoginButtonText>로그인</LoginButtonText>
+            <LoginButton onPress={handleLogin} disabled={isLoading}>
+              <LoginButtonText>{isLoading ? '로그인 중...' : '로그인'}</LoginButtonText>
             </LoginButton>
 
             <OrDividerContainer>

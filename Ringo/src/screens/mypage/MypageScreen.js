@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
-import { Dimensions, ScrollView, TouchableOpacity, Image } from "react-native";
+import { Dimensions, ScrollView, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
 
 // Icons
@@ -20,8 +22,97 @@ import GirlProfileImage from "../../assets/imgs/girl_profile_image.png";
 
 const { width, height } = Dimensions.get('window');
 
+// 음주/흡연/종교 변환 함수
+const getDrinkingLabel = (value) => {
+  const labels = {
+    'ALWAYS': '주 5-7회',
+    'OFTEN': '주 3-4회',
+    'RARELY': '주 1-2회',
+    'ON_NEED': '필요할 때만',
+    'NEVER': '절대 마시지 않음'
+  };
+  return labels[value] || value;
+};
+
+const getSmokingLabel = (value) => {
+  const labels = {
+    'SMOKING': '흡연',
+    'ELECTRONIC': '전자담배',
+    'NO_SMOKING': '금연 중',
+    'NEVER': '비흡연'
+  };
+  return labels[value] || value;
+};
+
+const getReligionLabel = (value) => {
+  const labels = {
+    'CHRISTIANITY': '기독교',
+    'BUDDHISM': '불교',
+    'CATHOLIC': '천주교',
+    'ATHEIST': '무교'
+  };
+  return labels[value] || value;
+};
+
+const getGenderLabel = (value) => {
+  return value === 'MALE' ? '남성' : value === 'FEMALE' ? '여성' : value;
+};
+
 const MypageScreen = () => {
   const navigation = useNavigation();
+  const [profileData, setProfileData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 프로필 정보 조회
+  const fetchProfile = async () => {
+    try {
+      // 저장된 토큰 가져오기
+      const credentials = await Keychain.getGenericPassword();
+      if (!credentials) {
+        console.log('저장된 토큰이 없습니다.');
+        setIsLoading(false);
+        return;
+      }
+
+      const tokenData = JSON.parse(credentials.password);
+      const accessToken = tokenData.accessToken;
+
+      const response = await fetch(config.USER.GET_PROFILE, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      const data = await response.json();
+      console.log('프로필 정보 조회 응답:', data);
+
+      if (response.ok) {
+        setProfileData(data);
+      } else {
+        console.error('프로필 조회 실패:', data);
+      }
+    } catch (error) {
+      console.error('프로필 조회 오류:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Container>
+        <LoadingContainer>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </LoadingContainer>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -33,12 +124,16 @@ const MypageScreen = () => {
 
       <ProfileSection>
         <ProfileImageContainer>
-          <ProfileImage source={GirlProfileImage} />
+          {profileData?.profile ? (
+            <ProfileImage source={{ uri: profileData.profile }} />
+          ) : (
+            <ProfileImage source={GirlProfileImage} />
+          )}
         </ProfileImageContainer>
         <ProfileInfo>
-          <ProfileName>닉네임닉네임</ProfileName>
+          <ProfileName>{profileData?.nickname || '닉네임'}</ProfileName>
           <ProfileDescription>
-            아직 얼굴 인증을 받지 않았어요!
+            {profileData?.job || ''} {profileData?.height ? `· ${profileData.height}cm` : ''}
           </ProfileDescription>
           <VerificationLink>본인 인증하러 가기</VerificationLink>
         </ProfileInfo>
@@ -319,4 +414,10 @@ const ProfilePreviewButtonText = styled(PtdBText)`
   color: #FFFFFF;
   font-size: ${width * 0.04}px;
   font-weight: 600;
+`;
+
+const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
 `;
