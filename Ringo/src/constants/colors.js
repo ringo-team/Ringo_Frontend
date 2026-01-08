@@ -11,5 +11,6 @@ export default {
   blue: '#3592E9',
   white: '#ffffff',
   black: '#171717',
-  green: '#14C871'
+  green: '#14C871',
+  primary: '#693BF2'
 };

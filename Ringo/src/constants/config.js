@@ -25,6 +25,8 @@ const config = {
 
   USER: {
     GET_PROFILE: `${BASE_URL}/users`, //내 프로필 정보 조회
+    GET_PROFILE_IMAGE: (userId) => `${BASE_URL}/users/${userId}/profile`, //프로필 사진 조회
+    GET_SNAPS: (userId) => `${BASE_URL}/users/${userId}/snaps`, //피드 사진 조회
   },
 
   FEED: {

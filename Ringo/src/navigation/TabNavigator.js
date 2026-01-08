@@ -7,6 +7,7 @@ import SnapScreen from "../screens/snap/SnapScreen";
 import MatchingScreen from "../screens/matching/MatchingScreen";
 import ChatScreen from "../screens/chat/ChatScreen";
 import MypageStackNavigator from "./MypageStackNavigator";
+import colors from "../constants/colors";
 
 // Tab icons
 import TabHomeIcon from "../assets/imgs/icons/tab/tab_home.png";
@@ -61,7 +62,7 @@ const TabNavigator = () => {
                 width: iconSize,
                 height: iconSize,
                 opacity: focused ? 1 : 0.4,
-                tintColor: focused ? '#14C871' : '#999999'
+                tintColor: focused ? colors.primary : '#999999'
               }}
               resizeMode="contain"
             />
