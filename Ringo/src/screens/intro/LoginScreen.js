@@ -66,11 +66,11 @@ const LoginScreen = () => {
       if (responseData.result === '0000') {
         // 토큰 저장
         const saved = await saveTokens(
-          responseData.accessToken, 
+          responseData.accessToken,
           responseData.refreshToken,
           responseData.userId
         );
-        
+
         if (saved) {
           navigation.reset({
             index: 0,

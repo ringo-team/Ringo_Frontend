@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,20 +8,17 @@ import {
   ScrollView,
   StatusBar,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 import { useNavigation } from '@react-navigation/native';
+import * as Keychain from 'react-native-keychain';
 import colors from '../../constants/colors';
+import config from '../../constants/config';
 
-// 임시 이미지들 - 실제 구현시 사용자 이미지로 교체
+// 기본 이미지
 const GirlProfileImage = require('../../assets/imgs/girl_profile_image.png');
-const SampleImage1 = require('../../assets/imgs/girl_profile_image.png');
-const SampleImage2 = require('../../assets/imgs/girl_feed_image_01.png');
-const SampleImage3 = require('../../assets/imgs/girl_feed_image_02.png');
-const SampleImage4 = require('../../assets/imgs/girl_profile_image.png');
-const SampleImage5 = require('../../assets/imgs/girl_profile_image.png');
-const SampleImage6 = require('../../assets/imgs/girl_profile_image.png');
 
 // 아이콘들
 const ProfileReportIcon = require('../../assets/imgs/icons/mypage/profile_report.png');
@@ -29,25 +26,125 @@ const ProfileHeartBubbleIcon = require('../../assets/imgs/icons/mypage/profile_h
 
 const { width, height } = Dimensions.get('window');
 
+// 변환 함수들
+const getDrinkingLabel = (value) => {
+  const labels = {
+    'ALWAYS': '주 5-7회',
+    'OFTEN': '주 3-4회',
+    'RARELY': '주 1-2회',
+    'ON_NEED': '필요할 때만',
+    'NEVER': '절대 마시지 않음'
+  };
+  return labels[value] || value;
+};
+
+const getSmokingLabel = (value) => {
+  const labels = {
+    'SMOKING': '흡연',
+    'ELECTRONIC': '전자담배',
+    'NO_SMOKING': '금연 중',
+    'NEVER': '비흡연'
+  };
+  return labels[value] || value;
+};
+
+const getReligionLabel = (value) => {
+  const labels = {
+    'CHRISTIANITY': '기독교',
+    'BUDDHISM': '불교',
+    'CATHOLIC': '천주교',
+    'ATHEIST': '무교'
+  };
+  return labels[value] || value;
+};
+
 const ProfilePreviewScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState('사진');
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [profileImages, setProfileImages] = useState([]);
+  const [snapImages, setSnapImages] = useState([]);
 
-  const profileImages = [
-    SampleImage1,
-    SampleImage2,
-    GirlProfileImage,
-    SampleImage3,
-    SampleImage4,
-    SampleImage5,
-    SampleImage6
-  ];
+  // 데이터 조회
+  const fetchData = async () => {
+    try {
+      const credentials = await Keychain.getGenericPassword();
+      if (!credentials) {
+        console.log('저장된 토큰이 없습니다.');
+        setIsLoading(false);
+        return;
+      }
+
+      const tokenData = JSON.parse(credentials.password);
+      const { accessToken, userId } = tokenData;
+
+      // 프로필 정보 조회
+      const profileResponse = await fetch(config.USER.GET_PROFILE, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      const profileResult = await profileResponse.json();
+      console.log('프로필 정보:', profileResult);
+      setProfileData(profileResult);
+
+      // 프로필 사진 조회
+      const profileImageResponse = await fetch(config.USER.GET_PROFILE_IMAGE(userId), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      const profileImageResult = await profileImageResponse.json();
+      console.log('프로필 사진:', profileImageResult);
+      if (profileImageResult && Array.isArray(profileImageResult)) {
+        setProfileImages(profileImageResult);
+      } else if (profileImageResult?.imageUrl) {
+        setProfileImages([{ imageUrl: profileImageResult.imageUrl }]);
+      }
+
+      // 피드 사진 조회
+      const snapsResponse = await fetch(config.USER.GET_SNAPS(userId), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      const snapsResult = await snapsResponse.json();
+      console.log('피드 사진:', snapsResult);
+      // 응답 형식: { result: "0000", list: [...] }
+      if (snapsResult?.result === '0000' && snapsResult?.list) {
+        setSnapImages(snapsResult.list);
+      } else if (snapsResult && Array.isArray(snapsResult)) {
+        setSnapImages(snapsResult);
+      }
+
+    } catch (error) {
+      console.error('데이터 조회 오류:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // 사진 탭에는 피드 사진만 표시
+  const allImages = snapImages;
 
   const openImageModal = (index) => {
-    setSelectedImageIndex(index % profileImages.length);
-    setIsImageModalVisible(true);
+    if (allImages.length > 0) {
+      setSelectedImageIndex(index % allImages.length);
+      setIsImageModalVisible(true);
+    }
   };
 
   const closeImageModal = () => {
@@ -57,27 +154,32 @@ const ProfilePreviewScreen = () => {
 
   const goToPreviousImage = () => {
     setSelectedImageIndex((prev) =>
-      prev === 0 ? profileImages.length - 1 : prev - 1
+      prev === 0 ? allImages.length - 1 : prev - 1
     );
   };
 
   const goToNextImage = () => {
     setSelectedImageIndex((prev) =>
-      prev === profileImages.length - 1 ? 0 : prev + 1
+      prev === allImages.length - 1 ? 0 : prev + 1
     );
   };
 
   const renderPhotosContent = () => {
-    // 3x3 그리드를 위해 9개 사진만 사용
-    const gridImages = [...profileImages, ...profileImages, ...profileImages].slice(0, 9);
+    if (allImages.length === 0) {
+      return (
+        <PhotosContainer>
+          <EmptyText>등록된 사진이 없습니다.</EmptyText>
+        </PhotosContainer>
+      );
+    }
 
     return (
       <PhotosContainer>
         <PhotoGrid>
-          {gridImages.map((image, index) => (
+          {allImages.map((image, index) => (
             <PhotoGridItem key={index}>
               <TouchableOpacity onPress={() => openImageModal(index)}>
-                <GridPhoto source={image} />
+                <GridPhoto source={{ uri: image.imageUrl }} />
               </TouchableOpacity>
             </PhotoGridItem>
           ))}
@@ -92,41 +194,44 @@ const ProfilePreviewScreen = () => {
         <InfoSection>
           <InfoTitle>기본 정보</InfoTitle>
           <InfoRow>
-            <InfoLabel>나이</InfoLabel>
-            <InfoValue>25세</InfoValue>
-          </InfoRow>
-          <InfoRow>
             <InfoLabel>키</InfoLabel>
-            <InfoValue>165cm</InfoValue>
+            <InfoValue>{profileData?.height ? `${profileData.height}cm` : '-'}</InfoValue>
           </InfoRow>
           <InfoRow>
             <InfoLabel>직업</InfoLabel>
-            <InfoValue>디자이너</InfoValue>
+            <InfoValue>{profileData?.job || '-'}</InfoValue>
           </InfoRow>
-        </InfoSection>
-
-        <InfoSection>
-          <InfoTitle>관심사</InfoTitle>
-          <TagsContainer>
-            <Tag><TagText>#음식</TagText></Tag>
-            <Tag><TagText>#명탐정코난</TagText></Tag>
-            <Tag><TagText>#여행블로그</TagText></Tag>
-            <Tag><TagText>#강아지</TagText></Tag>
-            <Tag><TagText>#NCT127</TagText></Tag>
-          </TagsContainer>
+          <InfoRow>
+            <InfoLabel>음주</InfoLabel>
+            <InfoValue>{profileData?.isDrinking ? getDrinkingLabel(profileData.isDrinking) : '-'}</InfoValue>
+          </InfoRow>
+          <InfoRow>
+            <InfoLabel>흡연</InfoLabel>
+            <InfoValue>{profileData?.isSmoking ? getSmokingLabel(profileData.isSmoking) : '-'}</InfoValue>
+          </InfoRow>
+          <InfoRow>
+            <InfoLabel>종교</InfoLabel>
+            <InfoValue>{profileData?.religion ? getReligionLabel(profileData.religion) : '-'}</InfoValue>
+          </InfoRow>
         </InfoSection>
 
         <InfoSection>
           <InfoTitle>자기소개</InfoTitle>
           <InfoDescription>
-            안녕하세요! 디자인 일을 하고 있고, 여행과 음식을 좋아합니다.
-            특히 명탐정코난을 정말 좋아해서 관련 굿즈 수집도 하고 있어요.
-            강아지 키우고 있고, NCT127 팬입니다 ㅎㅎ
+            {profileData?.biography || '등록된 자기소개가 없습니다.'}
           </InfoDescription>
         </InfoSection>
       </ScrollView>
     </InfoContainer>
   );
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -141,7 +246,11 @@ const ProfilePreviewScreen = () => {
 
           {/* 배경 이미지 */}
           <BackgroundContainer>
-            <BackgroundImage source={GirlProfileImage} />
+            {profileData?.profile ? (
+              <BackgroundImage source={{ uri: profileData.profile }} />
+            ) : (
+              <BackgroundImage source={GirlProfileImage} />
+            )}
           </BackgroundContainer>
 
           {/* 하단 탭 영역 */}
@@ -151,9 +260,13 @@ const ProfilePreviewScreen = () => {
               <ProfileHeaderGradient />
               <ProfileHeaderContent>
                 <ProfileHeaderLeft>
-                  <ProfileName>닉네임닉네임 (25세 여)</ProfileName>
+                  <ProfileName>
+                    {profileData?.nickname || '닉네임'} ({profileData?.gender === 'MALE' ? '남' : profileData?.gender === 'FEMALE' ? '여' : ''})
+                  </ProfileName>
                   <ProfileTags>
-                    #음식 #명탐정코난 #여행블로그{"\n"}#강아지 #NCT127
+                    {profileData?.hashtags && profileData.hashtags.length > 0
+                      ? profileData.hashtags.map(tag => `#${tag}`).join(' ')
+                      : ''}
                   </ProfileTags>
                 </ProfileHeaderLeft>
                 <ConnectButton>
@@ -217,29 +330,35 @@ const ProfilePreviewScreen = () => {
           <ImageModalBackground onPress={closeImageModal}>
             <ImageModalContent>
               <ImageContainer>
-                <ModalImage source={profileImages[selectedImageIndex]} />
+                {allImages[selectedImageIndex] && (
+                  <ModalImage source={{ uri: allImages[selectedImageIndex].imageUrl }} />
+                )}
                 <CloseButton onPress={closeImageModal}>
                   <CloseButtonText>×</CloseButtonText>
                 </CloseButton>
               </ImageContainer>
 
-              <NavigationButton
-                style={{ left: 8 }}
-                onPress={goToPreviousImage}
-              >
-                <NavigationButtonText>‹</NavigationButtonText>
-              </NavigationButton>
+              {allImages.length > 1 && (
+                <>
+                  <NavigationButton
+                    style={{ left: 8 }}
+                    onPress={goToPreviousImage}
+                  >
+                    <NavigationButtonText>‹</NavigationButtonText>
+                  </NavigationButton>
 
-              <NavigationButton
-                style={{ right: 8 }}
-                onPress={goToNextImage}
-              >
-                <NavigationButtonText>›</NavigationButtonText>
-              </NavigationButton>
+                  <NavigationButton
+                    style={{ right: 8 }}
+                    onPress={goToNextImage}
+                  >
+                    <NavigationButtonText>›</NavigationButtonText>
+                  </NavigationButton>
+                </>
+              )}
 
               <ImageDescriptionContainer>
                 <ImageDescription>
-                  이 사진은 영국에서부터 온 사진으로 제가 정말 좋아하는 사진입니다
+                  {allImages[selectedImageIndex]?.content || ''}
                 </ImageDescription>
               </ImageDescriptionContainer>
             </ImageModalContent>
@@ -594,7 +713,6 @@ const ImageContainer = styled.View`
   height: ${(width - 80) * 1.2}px;
   justify-content: center;
   align-items: center;
-  margin: 0 40px;
 `;
 
 const NavigationButton = styled.TouchableOpacity`
@@ -631,9 +749,10 @@ const ModalImage = styled.Image`
 const ImageDescriptionContainer = styled.View`
   background-color: white;
   padding: ${width * 0.05}px;
-  margin: 0 40px;
   border-bottom-left-radius: ${width * 0.03}px;
   border-bottom-right-radius: ${width * 0.03}px;
+  min-height: ${width * 0.1}px;
+  width: ${width - 80}px;
 `;
 
 const ImageDescription = styled.Text`
@@ -641,4 +760,11 @@ const ImageDescription = styled.Text`
   color: #333;
   text-align: left;
   line-height: ${width * 0.05}px;
+`;
+
+const EmptyText = styled.Text`
+  font-size: ${width * 0.04}px;
+  color: #999;
+  text-align: center;
+  padding: ${width * 0.1}px;
 `;

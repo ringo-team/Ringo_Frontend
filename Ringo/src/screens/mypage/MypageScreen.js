@@ -177,7 +177,7 @@ const MypageScreen = () => {
       <MenuSection>
         <MenuItem>
           <MenuIcon source={PencilEditIcon} />
-          <MenuText>프로필 수정</MenuText>
+          <MenuText>프로필 정보 수정</MenuText>
         </MenuItem>
         <MenuItem>
           <MenuIcon source={EditServeyIcon} />
