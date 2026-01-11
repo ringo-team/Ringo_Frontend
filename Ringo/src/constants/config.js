@@ -1,4 +1,9 @@
-export const BASE_URL = 'http://localhost:8080'; //기본 API URL
+import { Platform } from 'react-native';
+
+export const BASE_URL = Platform.select({
+  android: 'http://10.0.2.2:8080',  // 안드로이드 에뮬레이터
+  ios: 'http://localhost:8080',      // iOS 시뮬레이터
+});
 
 const config = {
   API_URL: BASE_URL,
