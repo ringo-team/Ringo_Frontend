@@ -5,7 +5,7 @@ import { Dimensions, Image } from 'react-native';
 import HomeScreen from "../screens/home/HomeScreen";
 import SnapScreen from "../screens/snap/SnapScreen";
 import MatchingScreen from "../screens/matching/MatchingScreen";
-import ChatScreen from "../screens/chat/ChatScreen";
+import ChatStackNavigator from "./ChatStackNavigator";
 import MypageStackNavigator from "./MypageStackNavigator";
 
 // Tab icons
@@ -71,7 +71,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Snap" component={SnapScreen} />
       <Tab.Screen name="Matching" component={MatchingScreen} />
-      <Tab.Screen name="Chat" component={ChatScreen} />
+      <Tab.Screen name="Chat" component={ChatStackNavigator} />
       <Tab.Screen name="Mypage" component={MypageStackNavigator} />
     </Tab.Navigator>
   );
