@@ -175,7 +175,7 @@ const MypageScreen = () => {
       <Divider />
 
       <MenuSection>
-        <MenuItem>
+        <MenuItem onPress={() => navigation.navigate('ProfileEdit', { profileData: profileData })}>
           <MenuIcon source={PencilEditIcon} />
           <MenuText>프로필 정보 수정</MenuText>
         </MenuItem>
