@@ -15,7 +15,7 @@ const ProfileFormScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const { registeredUserId } = route.params || {};
-    
+
     console.log('ProfileFormScreen - registeredUserId:', registeredUserId);
     const [selectedGender, setSelectedGender] = useState(null); // 'male' or 'female'
     const [birthDate, setBirthDate] = useState(new Date());
@@ -38,22 +38,22 @@ const ProfileFormScreen = () => {
         // 다음 화면으로 이동
         console.log('Selected Gender:', selectedGender);
         console.log('Birth Date:', birthDate);
-        
+
         const profileData = {
             registeredUserId,
             gender: selectedGender,
-            birthDate: birthDate.toISOString().split('T')[0] // YYYY-MM-DD 형식
+            birthday: birthDate.toISOString().split('T')[0] // YYYY-MM-DD 형식
         };
-        
+
         console.log('ProfileFormScreen - 전달할 profileData:', profileData);
         navigation.navigate('NicknameInputScreen', profileData);
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -74,7 +74,7 @@ const ProfileFormScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={1} totalSteps={9}/>
+                <StepIndicator currentStep={1} totalSteps={10} />
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -148,15 +148,15 @@ const ProfileFormScreen = () => {
                         isActive={true}
                         activeColor={colors.gray100}
                         onPress={handlePrevious}
-                        style={{height: width * 0.13, borderRadius: 12}}
+                        style={{ height: width * 0.13, borderRadius: 12 }}
                     />
-                    
+
                     <CustomButton
                         title="다음"
                         disabled={!isNextButtonActive}
                         isActive={isNextButtonActive}
                         onPress={handleNext}
-                        style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                        style={{ width: "85%", height: width * 0.13, borderRadius: 12 }}
                     />
                 </ButtonContainer>
             </Content>
@@ -189,7 +189,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
@@ -200,7 +200,7 @@ const DividerText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.gray100};
     font-weight: bold;
-`; 
+`;
 
 const MainTitle = styled(PtdBText)`
     font-size: ${width * 0.065}px;

@@ -14,9 +14,9 @@ const IntroductionScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const previousData = route.params || {};
-    
+
     console.log('IntroductionScreen - Received data:', previousData);
-    
+
     const [introduction, setIntroduction] = useState('');
 
     const handlePrevious = () => {
@@ -32,11 +32,11 @@ const IntroductionScreen = () => {
         navigation.navigate('HashtagInputScreen', profileData);
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -76,7 +76,7 @@ const IntroductionScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={6} totalSteps={9}/>
+                <StepIndicator currentStep={7} totalSteps={10} />
 
                 <MainTitle>
                     회원님을{"\n"}
@@ -119,15 +119,15 @@ const IntroductionScreen = () => {
                         isActive={true}
                         activeColor={colors.gray100}
                         onPress={handlePrevious}
-                        style={{height: width * 0.13, borderRadius: 12}}
+                        style={{ height: width * 0.13, borderRadius: 12 }}
                     />
-                    
+
                     <CustomButton
                         title="다음"
                         disabled={!isNextButtonActive}
                         isActive={isNextButtonActive}
                         onPress={handleNext}
-                        style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                        style={{ width: "85%", height: width * 0.13, borderRadius: 12 }}
                     />
                 </ButtonContainer>
             </Content>
@@ -160,7 +160,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};

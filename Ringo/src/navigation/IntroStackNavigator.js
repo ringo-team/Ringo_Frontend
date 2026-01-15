@@ -16,6 +16,7 @@ import NicknameInputScreen from "../screens/profile-form/NicknameInputScreen";
 import LocationSelectScreen from "../screens/profile-form/LocationSelectScreen";
 import InfoInputScreen from "../screens/profile-form/InfoInputScreen";
 import PreferenceInputScreen from "../screens/profile-form/PreferenceInputScreen";
+import MBTIInputScreen from "../screens/profile-form/MBTIInputScreen";
 import IntroductionScreen from "../screens/profile-form/IntroductionScreen";
 import HashtagInputScreen from "../screens/profile-form/HashtagInputScreen";
 import PhotoUploadScreen from "../screens/profile-form/PhotoUploadScreen";
@@ -39,12 +40,12 @@ const IntroStackNavigator = () => {
                     fontFamily: 'Pretendard-Bold',
                     color: colors.black,
                 },
-                headerLeft: () => 
+                headerLeft: () =>
                     route.name !== 'LoginScreen' ? (
-                        <BackButton onPress={() => navigation.goBack()} /> 
+                        <BackButton onPress={() => navigation.goBack()} />
                     ) : null,
-                    title: '',
-                    headerTransparent: true,
+                title: '',
+                headerTransparent: true,
             })}
         >
             <Stack.Screen
@@ -100,6 +101,11 @@ const IntroStackNavigator = () => {
             <Stack.Screen
                 name="PreferenceInputScreen"
                 component={PreferenceInputScreen}
+                options={{ title: "" }}
+            />
+            <Stack.Screen
+                name="MBTIInputScreen"
+                component={MBTIInputScreen}
                 options={{ title: "" }}
             />
             <Stack.Screen

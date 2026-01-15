@@ -15,7 +15,7 @@ const LocationSelectScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const previousData = route.params || {};
-    
+
     console.log('LocationSelectScreen - Received data:', previousData);
 
     // 거주지
@@ -81,11 +81,11 @@ const LocationSelectScreen = () => {
         navigation.navigate('InfoInputScreen', profileData);
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -104,7 +104,7 @@ const LocationSelectScreen = () => {
                         <HeaderTitle>프로필 입력</HeaderTitle>
                     </Header>
 
-                    <StepIndicator currentStep={3} totalSteps={9}/>
+                    <StepIndicator currentStep={3} totalSteps={10} />
 
                     <MainTitle>
                         회원님의{"\n"}
@@ -164,15 +164,15 @@ const LocationSelectScreen = () => {
                             isActive={true}
                             activeColor={colors.gray100}
                             onPress={handlePrevious}
-                            style={{height: width * 0.13, borderRadius: 12}}
+                            style={{ height: width * 0.13, borderRadius: 12 }}
                         />
-                        
+
                         <CustomButton
                             title="다음"
                             disabled={!isNextButtonActive}
                             isActive={isNextButtonActive}
                             onPress={handleNext}
-                            style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                            style={{ width: "85%", height: width * 0.13, borderRadius: 12 }}
                         />
                     </ButtonContainer>
                 </Content>
@@ -276,7 +276,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
@@ -287,7 +287,7 @@ const DividerText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.gray100};
     font-weight: bold;
-`; 
+`;
 
 const MainTitle = styled(PtdBText)`
     font-size: ${width * 0.065}px;

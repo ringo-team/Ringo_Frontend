@@ -186,7 +186,7 @@ const FeedPhotoUploadScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={9} totalSteps={9} />
+                <StepIndicator currentStep={10} totalSteps={10} />
 
                 <MainTitle>
                     회원님의{"\n"}

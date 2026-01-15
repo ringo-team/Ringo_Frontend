@@ -15,9 +15,9 @@ const PreferenceInputScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const previousData = route.params || {};
-    
+
     console.log('PreferenceInputScreen - Received data:', previousData);
-    
+
     const [drinking, setDrinking] = useState('');
     const [smoking, setSmoking] = useState('');
     const [religion, setReligion] = useState('');
@@ -34,14 +34,14 @@ const PreferenceInputScreen = () => {
             religion: religion
         };
         console.log('PreferenceInputScreen - Sending data:', profileData);
-        navigation.navigate('IntroductionScreen', profileData);
+        navigation.navigate('MBTIInputScreen', profileData);
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
+    const StepIndicator = ({ currentStep, totalSteps }) => {
         return (
             <Indicator>
                 <IndicatorText>
-                    {currentStep} 
+                    {currentStep}
                     <DividerText> / {totalSteps} </DividerText>
                 </IndicatorText>
             </Indicator>
@@ -58,7 +58,7 @@ const PreferenceInputScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={5} totalSteps={9}/>
+                <StepIndicator currentStep={5} totalSteps={10} />
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -217,15 +217,15 @@ const PreferenceInputScreen = () => {
                         isActive={true}
                         activeColor={colors.gray100}
                         onPress={handlePrevious}
-                        style={{height: width * 0.13, borderRadius: 12}}
+                        style={{ height: width * 0.13, borderRadius: 12 }}
                     />
-                    
+
                     <CustomButton
                         title="다음"
                         disabled={!isNextButtonActive}
                         isActive={isNextButtonActive}
                         onPress={handleNext}
-                        style={{width: "85%", height: width * 0.13, borderRadius: 12}}
+                        style={{ width: "85%", height: width * 0.13, borderRadius: 12 }}
                     />
                 </ButtonContainer>
             </Content>
@@ -258,7 +258,7 @@ const Indicator = styled.View`
     align-items: left;
     margin-bottom: ${width * 0.034}px;
 `;
-    
+
 const IndicatorText = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
@@ -301,7 +301,7 @@ const OptionButton = styled.TouchableOpacity`
     height: ${width * 0.13}px;
     margin-bottom: ${width * 0.03}px;
     background-color: ${({ selected }) =>
-      selected ? '#E8F5E9' : '#F8F8F8'};
+        selected ? '#E8F5E9' : '#F8F8F8'};
     border-radius: 8px;
     justify-content: center;
     padding-left: ${width * 0.04}px;

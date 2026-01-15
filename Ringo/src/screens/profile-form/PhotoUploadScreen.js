@@ -6,7 +6,9 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 import Background from "../../components/Background";
 import colors from "../../constants/colors";
+import config from "../../constants/config";
 import { PtdText, PtdBText } from "../../components/CustomText";
+import BackIcon from "../../assets/imgs/icons/back.svg";
 
 const profileExampleImage = require('../../assets/imgs/profile_example.png');
 
@@ -16,11 +18,15 @@ const PhotoUploadScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const profileData = route.params || {};
-    
+
     console.log('PhotoUploadScreen - 받은 profileData:', profileData);
-    
+
     const [profileImage, setProfileImage] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
+
+    const handleBack = () => {
+        navigation.goBack();
+    };
 
     const handleImagePicker = () => {
         Alert.alert(
@@ -99,20 +105,20 @@ const PhotoUploadScreen = () => {
         }
 
         setIsUploading(true);
-        
+
         try {
             const userId = profileData.userId || profileData.registeredUserId;
-            
+
             if (!userId) {
                 Alert.alert('오류', '사용자 ID가 없습니다.');
                 return;
             }
 
             const formData = new FormData();
-            
+
             // userId 추가 (숫자 타입)
             formData.append('userId', parseInt(userId));
-            
+
             // React Native에서 파일 업로드 시 올바른 형식
             formData.append('image', {
                 uri: profileImage.uri,
@@ -129,7 +135,7 @@ const PhotoUploadScreen = () => {
                 }
             });
 
-            const response = await fetch('http://localhost:8080/profiles', {
+            const response = await fetch(config.PROFILE.UPLOAD, {
                 method: 'POST',
                 // React Native에서 multipart/form-data 사용 시 Content-Type 헤더 제거
                 body: formData
@@ -138,29 +144,45 @@ const PhotoUploadScreen = () => {
             console.log('응답 상태:', response.status);
             console.log('응답 헤더:', response.headers);
 
-            if (response.status === 201) {
-                const responseData = await response.text();
-                console.log('프로필 사진 업로드 성공:', responseData);
-                
-                Alert.alert(
-                    '업로드 완료',
-                    '프로필 사진이 성공적으로 업로드되었습니다.',
-                    [{
-                        text: '확인',
-                        onPress: () => navigation.navigate('FeedPhotoUploadScreen', profileData)
-                    }]
-                );
-            } else {
-                const errorData = await response.text();
-                console.log('프로필 사진 업로드 실패:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorData
-                });
-                Alert.alert(
-                    '업로드 실패', 
-                    `상태코드: ${response.status}\n${errorData || '프로필 사진 업로드에 실패했습니다.'}`
-                );
+            const responseData = await response.json();
+            console.log('프로필 사진 업로드 응답:', responseData);
+
+            switch (responseData.result) {
+                case '0000':
+                    // 생성 성공
+                    Alert.alert(
+                        '업로드 완료',
+                        '프로필 사진이 성공적으로 업로드되었습니다.',
+                        [{
+                            text: '확인',
+                            onPress: () => navigation.navigate('FeedPhotoUploadScreen', {
+                                ...profileData,
+                                profileImageUrl: responseData.imageUrl,
+                                profileImageId: responseData.imageId
+                            })
+                        }]
+                    );
+                    break;
+                case 'E0010':
+                    // 프로필에 얼굴이 나오지 않음
+                    Alert.alert('업로드 실패', '프로필 사진에 얼굴이 나오지 않습니다. 다른 사진을 선택해주세요.');
+                    break;
+                case 'E0008':
+                    // 이미 프로필이 업로드 되어 있음
+                    Alert.alert('업로드 실패', '이미 프로필 사진이 등록되어 있습니다.');
+                    break;
+                case 'E0005':
+                    // 유저를 찾을 수 없음
+                    Alert.alert('업로드 실패', '사용자를 찾을 수 없습니다.');
+                    break;
+                case 'E0011':
+                    // 프로필에 부적절한 부분이 검출됨
+                    Alert.alert('업로드 실패', '프로필 사진에 부적절한 부분이 검출되었습니다. 다른 사진을 선택해주세요.');
+                    break;
+                default:
+                    // 기타 오류
+                    Alert.alert('업로드 실패', responseData.message || '프로필 사진 업로드에 실패했습니다.');
+                    break;
             }
         } catch (error) {
             console.error('프로필 사진 업로드 오류:', error);
@@ -174,26 +196,22 @@ const PhotoUploadScreen = () => {
         uploadProfileImage();
     };
 
-    const StepIndicator = ({ currentStep, totalSteps}) => {
-        return (
-            <Indicator>
-                <IndicatorText>
-                    {currentStep} 
-                    <DividerText> / {totalSteps} </DividerText>
-                </IndicatorText>
-            </Indicator>
-        )
-    };
-
     return (
         <Wrapper>
             <Background />
             <Content>
-                <TitleContainer>
-                    <Title>프로필 입력</Title>
-                </TitleContainer>
+                <Header>
+                    <BackButton onPress={handleBack}>
+                        <BackIcon width={width * 0.06} height={width * 0.06} />
+                    </BackButton>
+                    <HeaderTitle>프로필 입력</HeaderTitle>
+                </Header>
 
-                <StepIndicator currentStep={8} totalSteps={9}/>
+                <StepIndicator>
+                    <StepText>9</StepText>
+                    <StepDivider>/</StepDivider>
+                    <StepTotal>10</StepTotal>
+                </StepIndicator>
 
                 <MainTitle>
                     회원님의{"\n"}
@@ -231,7 +249,7 @@ const PhotoUploadScreen = () => {
                             <ReUploadButtonText>재등록</ReUploadButtonText>
                         </ReUploadButton>
 
-                        <SubmitButton 
+                        <SubmitButton
                             onPress={handleNext}
                             disabled={isUploading}
                             isUploading={isUploading}
@@ -253,35 +271,50 @@ const Wrapper = styled.View`
 
 const Content = styled.View`
     flex: 1;
-    padding: ${width * 0.08}px;
+    padding: ${width * 0.05}px;
+    padding-top: ${width * 0.15}px;
 `;
 
-const TitleContainer = styled.View`
-    margin-top: ${width * 0.12}px;
-    margin-left: ${width * 0.1}px;
-    margin-bottom: ${width * 0.1}px;
+const Header = styled.View`
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: ${width * 0.06}px;
+    justify-content: flex-start;
 `;
 
-const Title = styled(PtdBText)`
+const BackButton = styled.TouchableOpacity`
+    padding: ${width * 0.02}px;
+    margin-right: ${width * 0.03}px;
+`;
+
+const HeaderTitle = styled(PtdBText)`
     font-size: ${width * 0.045}px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const Indicator = styled.View`
-    align-items: left;
-    margin-bottom: ${width * 0.034}px;
+const StepIndicator = styled.View`
+    flex-direction: row;
+    align-items: baseline;
+    margin-bottom: ${width * 0.06}px;
 `;
-    
-const IndicatorText = styled(PtdBText)`
-    font-size: ${width * 0.045}px;
+
+const StepText = styled(PtdBText)`
+    font-size: 18px;
     color: ${colors.black};
     font-weight: bold;
 `;
 
-const DividerText = styled(PtdBText)`
-    font-size: ${width * 0.045}px;
-    color: ${colors.gray100};
+const StepDivider = styled(PtdBText)`
+    font-size: 18px;
+    color: #CCCCCC;
+    margin: 0 ${width * 0.01}px;
+    font-weight: bold;
+`;
+
+const StepTotal = styled(PtdBText)`
+    font-size: 18px;
+    color: #CCCCCC;
     font-weight: bold;
 `;
 

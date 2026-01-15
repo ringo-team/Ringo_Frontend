@@ -45,7 +45,7 @@ const IdInputScreen = () => {
     // 중복확인
     const handleDuplicateCheck = async () => {
         try {
-            const response = await fetch(`${config.SIGNUP.CHECK_LOGIN_ID}?email=${userId}`);
+            const response = await fetch(`${config.SIGNUP.CHECK_LOGIN_ID}?loginId=${userId}`);
             const result = await response.json();
 
             if (response.ok) {

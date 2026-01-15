@@ -67,7 +67,7 @@ const PasswordInputScreen = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: userId,
+                    loginId: userId,
                     password: password,
                     isMarketingReceptionConsent: isMarketingReceptionConsent || false
                 })

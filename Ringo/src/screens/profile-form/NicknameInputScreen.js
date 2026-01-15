@@ -95,7 +95,7 @@ const NicknameInputScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={2} totalSteps={9} />
+                <StepIndicator currentStep={2} totalSteps={10} />
 
                 <MainTitle>
                     회원님의{"\n"}

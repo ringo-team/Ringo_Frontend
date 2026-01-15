@@ -38,11 +38,17 @@ const HashtagInputScreen = () => {
 
         setIsLoading(true);
 
+        // gender 값 변환 (male -> MALE, female -> FEMALE)
+        const genderValue = profileData.gender === 'male' ? 'MALE' :
+            profileData.gender === 'female' ? 'FEMALE' :
+                profileData.gender?.toUpperCase() || '';
+
         try {
             const requestData = {
                 id: userId,
                 nickname: profileData.nickname,
-                birthday: profileData.birthDate,
+                birthday: profileData.birthday,
+                gender: genderValue,
                 address: {
                     city: profileData.address?.city || '',
                     district: profileData.address?.district || ''
@@ -56,8 +62,9 @@ const HashtagInputScreen = () => {
                 isSmoking: profileData.isSmoking,
                 isDrinking: profileData.isDrinking,
                 religion: profileData.religion,
-                biography: profileData.biography,
-                hashtags: hashtags
+                biography: profileData.biography || profileData.introduction || '',
+                hashtags: hashtags,
+                mbti: profileData.mbti || ''
             };
 
             console.log('전송할 프로필 데이터:', requestData);
@@ -154,7 +161,7 @@ const HashtagInputScreen = () => {
                     <Title>프로필 입력</Title>
                 </TitleContainer>
 
-                <StepIndicator currentStep={7} totalSteps={9} />
+                <StepIndicator currentStep={8} totalSteps={10} />
 
                 <MainTitle>
                     회원님을{"\n"}
