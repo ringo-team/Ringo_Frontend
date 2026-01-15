@@ -87,14 +87,14 @@ const ProfileEditScreen = () => {
             const { accessToken, userId } = tokenData;
 
             // 프로필 정보 조회
-            const profileResponse = await fetch(config.USER.GET_PROFILE, {
+            const profileResponse = await fetch(config.USER.GET_PROFILE(userId), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
-            
+
             if (!profileResponse.ok) {
                 console.log('프로필 조회 실패:', profileResponse.status);
                 // 전달받은 데이터로 초기화
@@ -104,7 +104,7 @@ const ProfileEditScreen = () => {
                 setIsLoading(false);
                 return;
             }
-            
+
             const profileResult = await profileResponse.json();
             console.log('프로필 정보:', profileResult);
 
@@ -267,32 +267,43 @@ const ProfileEditScreen = () => {
 
             const mbtiString = mbti.ei && mbti.ns && mbti.tf && mbti.pj
                 ? `${mbti.ei}${mbti.ns}${mbti.tf}${mbti.pj}`
-                : null;
+                : '';
 
+            // request body - 요청하신 형식에 맞게 수정
             const requestData = {
-                id: userId,
-                nickname: nickname,
-                birthday: birthday,
-                gender: gender === '남성' ? 'MALE' : 'FEMALE',
+                height: passedProfileData?.height?.toString() || '',
+                isSmoking: passedProfileData?.isSmoking || '',
+                isDrinking: passedProfileData?.isDrinking || '',
+                job: passedProfileData?.job || '',
+                religion: passedProfileData?.religion || '',
+                biography: passedProfileData?.biography || '',
                 mbti: mbtiString,
-                hashtags: hashtags,
             };
 
             console.log('저장할 프로필 데이터:', requestData);
 
-            // TODO: 프로필 수정 API 호출
-            // const response = await fetch(config.USER.UPDATE_PROFILE, {
-            //     method: 'PUT',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Bearer ${accessToken}`
-            //     },
-            //     body: JSON.stringify(requestData)
-            // });
+            const response = await fetch(config.USER.UPDATE_PROFILE, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify(requestData)
+            });
 
-            Alert.alert('완료', '프로필이 저장되었습니다.', [
-                { text: '확인', onPress: () => navigation.goBack() }
-            ]);
+            console.log('프로필 수정 응답 status:', response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('프로필 수정 성공:', result);
+                Alert.alert('완료', '프로필이 저장되었습니다.', [
+                    { text: '확인', onPress: () => navigation.goBack() }
+                ]);
+            } else {
+                const errorData = await response.json();
+                console.log('프로필 수정 실패:', errorData);
+                Alert.alert('오류', errorData.message || '프로필 저장에 실패했습니다.');
+            }
 
         } catch (error) {
             console.error('프로필 저장 오류:', error);
@@ -514,7 +525,7 @@ const ProfileEditScreen = () => {
                                 <BirthdayLabel>일</BirthdayLabel>
                             </BirthdayFieldWithLabel>
                         </BirthdayRow>
-                        
+
                         <DatePicker
                             modal
                             open={showDatePicker}

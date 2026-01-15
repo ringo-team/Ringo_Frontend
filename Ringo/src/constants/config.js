@@ -29,9 +29,11 @@ const config = {
   },
 
   USER: {
-    GET_PROFILE: `${BASE_URL}/users`, //내 프로필 정보 조회
+    GET_PROFILE: (userId) => `${BASE_URL}/users/${userId}`, //내 프로필 정보 조회
+    UPDATE_PROFILE: `${BASE_URL}/users`, //프로필 정보 수정 (PATCH)
+    GET_OTHER_PROFILE: (userId) => `${BASE_URL}/users/${userId}`, //타인 프로필 정보 조회
     GET_PROFILE_IMAGE: (userId) => `${BASE_URL}/users/${userId}/profile`, //프로필 사진 조회
-    GET_SNAPS: (userId) => `${BASE_URL}/users/${userId}/snaps`, //피드 사진 조회
+    GET_FEEDS: (userId) => `${BASE_URL}/users/${userId}/feeds`, //피드 사진 조회
   },
 
   FEED: {

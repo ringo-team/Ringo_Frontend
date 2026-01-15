@@ -76,8 +76,9 @@ const MypageScreen = () => {
 
       const tokenData = JSON.parse(credentials.password);
       const accessToken = tokenData.accessToken;
+      const userId = tokenData.userId;
 
-      const response = await fetch(config.USER.GET_PROFILE, {
+      const response = await fetch(config.USER.GET_PROFILE(userId), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +86,18 @@ const MypageScreen = () => {
         }
       });
 
-      const data = await response.json();
+      console.log('프로필 조회 응답 status:', response.status);
+
+      const text = await response.text();
+      console.log('프로필 조회 응답 text:', text);
+
+      if (!text) {
+        console.log('응답이 비어있습니다.');
+        setIsLoading(false);
+        return;
+      }
+
+      const data = JSON.parse(text);
       console.log('프로필 정보 조회 응답:', data);
 
       if (response.ok) {

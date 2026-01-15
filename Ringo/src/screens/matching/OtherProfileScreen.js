@@ -12,13 +12,13 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Keychain from 'react-native-keychain';
 import colors from '../../constants/colors';
 import config from '../../constants/config';
 
 // 기본 이미지
-const GirlProfileImage = require('../../assets/imgs/girl_profile_image.png');
+const DefaultProfileImage = require('../../assets/imgs/boy_profile_image.png');
 
 // 아이콘들
 const ProfileReportIcon = require('../../assets/imgs/icons/mypage/profile_report.png');
@@ -58,18 +58,26 @@ const getReligionLabel = (value) => {
   return labels[value] || value;
 };
 
-const ProfilePreviewScreen = () => {
+const OtherProfileScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { userId, profileData: passedProfileData } = route.params || {};
+
   const [activeTab, setActiveTab] = useState('사진');
   const [selectedImageIndex, setSelectedImageIndex] = useState(-1);
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [profileData, setProfileData] = useState(null);
-  const [profileImages, setProfileImages] = useState([]);
-  const [snapImages, setSnapImages] = useState([]);
+  const [profileData, setProfileData] = useState(passedProfileData || null);
+  const [feedImages, setFeedImages] = useState([]);
 
   // 데이터 조회
   const fetchData = async () => {
+    if (!userId) {
+      console.log('userId가 없습니다.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const credentials = await Keychain.getGenericPassword();
       if (!credentials) {
@@ -79,44 +87,25 @@ const ProfilePreviewScreen = () => {
       }
 
       const tokenData = JSON.parse(credentials.password);
-      const { accessToken, userId } = tokenData;
+      const { accessToken } = tokenData;
 
-      // 프로필 정보 조회
-      const profileResponse = await fetch(config.USER.GET_PROFILE(userId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
+      // 프로필 정보가 전달되지 않은 경우 조회
+      if (!passedProfileData) {
+        const profileResponse = await fetch(config.USER.GET_OTHER_PROFILE(userId), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
 
-      console.log('프로필 응답 status:', profileResponse.status);
-      const profileText = await profileResponse.text();
-      console.log('프로필 응답 text:', profileText);
-
-      if (profileText) {
-        const profileResult = JSON.parse(profileText);
-        console.log('프로필 정보:', profileResult);
-        setProfileData(profileResult);
-      }
-
-      // 프로필 사진 조회
-      const profileImageResponse = await fetch(config.USER.GET_PROFILE_IMAGE(userId), {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
-
-      const profileImageText = await profileImageResponse.text();
-      if (profileImageText) {
-        const profileImageResult = JSON.parse(profileImageText);
-        console.log('프로필 사진:', profileImageResult);
-        if (profileImageResult && Array.isArray(profileImageResult)) {
-          setProfileImages(profileImageResult);
-        } else if (profileImageResult?.imageUrl) {
-          setProfileImages([{ imageUrl: profileImageResult.imageUrl }]);
+        const profileText = await profileResponse.text();
+        if (profileText) {
+          const profileResult = JSON.parse(profileText);
+          console.log('타인 프로필 정보:', profileResult);
+          if (profileResult.result === '0000') {
+            setProfileData(profileResult);
+          }
         }
       }
 
@@ -133,11 +122,10 @@ const ProfilePreviewScreen = () => {
       if (feedsText) {
         const feedsResult = JSON.parse(feedsText);
         console.log('피드 사진:', feedsResult);
-        // 응답 형식: { result: "0000", list: [...] }
         if (feedsResult?.result === '0000' && feedsResult?.list) {
-          setSnapImages(feedsResult.list);
+          setFeedImages(feedsResult.list);
         } else if (feedsResult && Array.isArray(feedsResult)) {
-          setSnapImages(feedsResult);
+          setFeedImages(feedsResult);
         }
       }
 
@@ -152,8 +140,7 @@ const ProfilePreviewScreen = () => {
     fetchData();
   }, []);
 
-  // 사진 탭에는 피드 사진만 표시
-  const allImages = snapImages;
+  const allImages = feedImages;
 
   const openImageModal = (index) => {
     if (allImages.length > 0) {
@@ -254,7 +241,7 @@ const ProfilePreviewScreen = () => {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ backgroundColor: 'white', paddingBottom: height * 0.22 }}
+        contentContainerStyle={{ backgroundColor: 'white', paddingBottom: height * 0.15 }}
         showsVerticalScrollIndicator={false}
       >
         <Container>
@@ -264,7 +251,7 @@ const ProfilePreviewScreen = () => {
             {profileData?.profile ? (
               <BackgroundImage source={{ uri: profileData.profile }} />
             ) : (
-              <BackgroundImage source={GirlProfileImage} />
+              <BackgroundImage source={DefaultProfileImage} />
             )}
           </BackgroundContainer>
 
@@ -311,28 +298,18 @@ const ProfilePreviewScreen = () => {
             </ContentContainer>
           </BottomSection>
 
-
         </Container>
       </ScrollView>
 
-      {/* 고정 버튼들 */}
+      {/* 고정 헤더 */}
       <FixedHeader>
         <BackButton onPress={() => navigation.goBack()}>
           <BackButtonText>‹</BackButtonText>
         </BackButton>
-        <NotificationButton>
-          <NotificationIcon source={ProfileReportIcon} />
-        </NotificationButton>
+        <ReportButton>
+          <ReportIcon source={ProfileReportIcon} />
+        </ReportButton>
       </FixedHeader>
-
-      <FixedFloatingButtons>
-        <FloatingButton style={{ backgroundColor: 'white' }}>
-          <FloatingButtonText style={{ color: colors.black }}>프로필 수정하기</FloatingButtonText>
-        </FloatingButton>
-        <FloatingButton style={{ backgroundColor: colors.black }}>
-          <FloatingButtonText style={{ color: 'white' }}>마이페이지 가기</FloatingButtonText>
-        </FloatingButton>
-      </FixedFloatingButtons>
 
       {/* 이미지 확대 모달 */}
       <Modal
@@ -384,7 +361,7 @@ const ProfilePreviewScreen = () => {
   );
 };
 
-export default ProfilePreviewScreen;
+export default OtherProfileScreen;
 
 // Styled Components
 const Container = styled.View`
@@ -408,8 +385,6 @@ const BackgroundImage = styled.Image`
   resize-mode: contain;
 `;
 
-
-
 const BackButton = styled.TouchableOpacity`
   width: 40px;
   height: 40px;
@@ -425,7 +400,7 @@ const BackButtonText = styled.Text`
   font-weight: bold;
 `;
 
-const NotificationButton = styled.TouchableOpacity`
+const ReportButton = styled.TouchableOpacity`
   width: 40px;
   height: 40px;
   justify-content: center;
@@ -434,18 +409,10 @@ const NotificationButton = styled.TouchableOpacity`
   border-radius: 20px;
 `;
 
-const NotificationIcon = styled.Image`
+const ReportIcon = styled.Image`
   width: 20px;
   height: 20px;
   tint-color: white;
-`;
-
-const ProfileOverlay = styled.View`
-  position: absolute;
-  bottom: ${height * 0.45}px;
-  left: ${width * 0.05}px;
-  right: ${width * 0.05}px;
-  z-index: 10;
 `;
 
 const ProfileName = styled.Text`
@@ -572,21 +539,6 @@ const PhotosContainer = styled.View`
   padding-bottom: ${width * 0.2}px;
 `;
 
-const PhotoSlide = styled.View`
-  width: ${width}px;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  padding: ${width * 0.05}px;
-`;
-
-const ProfilePhoto = styled.Image`
-  width: ${width * 0.8}px;
-  height: ${width * 0.8}px;
-  border-radius: ${width * 0.04}px;
-  resize-mode: cover;
-`;
-
 const InfoContainer = styled.View`
   flex: 1;
   background-color: white;
@@ -622,24 +574,6 @@ const InfoValue = styled.Text`
   color: ${colors.black};
 `;
 
-const TagsContainer = styled.View`
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: ${width * 0.02}px;
-`;
-
-const Tag = styled.View`
-  background-color: #F0F0F0;
-  border-radius: ${width * 0.04}px;
-  padding: ${width * 0.02}px ${width * 0.03}px;
-  margin-bottom: ${width * 0.02}px;
-`;
-
-const TagText = styled.Text`
-  font-size: ${width * 0.032}px;
-  color: #666;
-`;
-
 const InfoDescription = styled.Text`
   font-size: ${width * 0.04}px;
   color: ${colors.black};
@@ -658,30 +592,7 @@ const FixedHeader = styled.View`
   z-index: 1000;
 `;
 
-const FixedFloatingButtons = styled.View`
-  position: absolute;
-  bottom: ${width * 0.03}px;
-  right: ${width * 0.05}px;
-  z-index: 1000;
-`;
-
-const FloatingButton = styled.TouchableOpacity`
-  border-radius: ${width * 0.08}px;
-  padding: ${width * 0.03}px ${width * 0.05}px;
-  margin-bottom: ${width * 0.03}px;
-  shadow-color: #000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.25;
-  shadow-radius: 4px;
-  elevation: 5;
-`;
-
-const FloatingButtonText = styled.Text`
-  font-size: ${width * 0.035}px;
-  font-weight: 600;
-`;
-
-// 이미지 모달 관련 스타일 컴포넌트들
+// 이미지 모달 관련 스타일
 const ImageModalContainer = styled.View`
   flex: 1;
   justify-content: center;
