@@ -10,19 +10,19 @@ const Nav = createNativeStackNavigator();
 
 const RootNavigator = () => {
   return (
-  <Nav.Navigator
-    initialRouteName="IntroStackNavigator"
-    screenOptions={{ headerShown: false }}
-  >
-    <Nav.Screen name="HomeScreen" component={HomeScreen} />
-    <Nav.Screen name="TabNavigator" component={TabNavigator} />
-    <Nav.Screen 
-        name="IntroStackNavigator" 
-        component={IntroStackNavigator} 
-        initialParams={{ screen: 'LoginScreen'}}
-        />
-    <Nav.Screen name="OtherProfile" component={OtherProfileScreen} />
-  </Nav.Navigator>
+    <Nav.Navigator
+      initialRouteName="IntroStackNavigator"
+      screenOptions={{ headerShown: false }}
+    >
+      <Nav.Screen name="HomeScreen" component={HomeScreen} />
+      <Nav.Screen name="TabNavigator" component={TabNavigator} />
+      <Nav.Screen
+        name="IntroStackNavigator"
+        component={IntroStackNavigator}
+        initialParams={{ screen: 'LoginScreen' }}
+      />
+      <Nav.Screen name="OtherProfile" component={OtherProfileScreen} />
+    </Nav.Navigator>
   );
 };
 

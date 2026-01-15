@@ -100,7 +100,7 @@ const MatchingScreen = () => {
 
       <ContentContainer>
         {/* 프로필 카드 - ConnectionRequestsScreen과 동일한 디자인 */}
-        <TouchableOpacity 
+        <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => navigation.navigate('OtherProfile', { userId: targetUserId })}
         >
