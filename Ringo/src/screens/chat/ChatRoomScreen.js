@@ -11,7 +11,7 @@ const { width } = Dimensions.get("window");
 
 const ChatRoomScreen = () => {
     const route = useRoute();
-    const { chatRoomId, name } = route.params;
+    const { chatroomId, name } = route.params;
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import colors from "../../constants/colors";
 import { PtdText, PtdBText } from "../../components/CustomText";
@@ -8,19 +8,46 @@ import { useNavigation } from "@react-navigation/native";
 import Background from "../../components/Background";
 
 import CHATEMPTY from "../../assets/imgs/chat_empty.png";
-import { DUMMY_CHAT_ROOMS } from "../../constants/ChatData";
 import CustomButton from "../../components/CustomButton";
+import { get } from "../../services/api";
+import config from "../../constants/config";
 
 const { width } = Dimensions.get("window");
 
 const ChatScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("ALL");
+  const [chatRooms, setChatRooms] = useState([]);
+
+  /** 채팅방 불러오기 */
+  const fetchChatRoom = async (userId) => {
+    try {
+      const token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJyaW5nbyIsImlhdCI6MTc2ODExNzQxNywic3ViIjoicmluZ28xMjM0IiwiZXhwIjoxNzg2MTE3NDE3fQ.MWJ0cpMlO9Kr69jseXgMi33LjITABCScDw1vX8rfDVMYWHSSCmf60ZyOkY-xHlBNvQSHw9e7lOkqmt0M_QKqwQ'";
+      const response = await get(config.CHAT.ROOM_CALL(userId),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      }
+    );
+      setChatRooms(response.data.list);
+    } catch (error) {
+      console.error("채팅방 불러오기 오류:", error.response || error.message);
+    }
+  };
+
+  /** 최초 진입 */
+  useEffect(() => {
+    const userId = 1; // TODO: 실제 로그인 유저 ID
+    fetchChatRoom(userId);
+  }, []);
 
   const filteredRooms =
     activeTab === "ALL"
-      ? DUMMY_CHAT_ROOMS
-      : DUMMY_CHAT_ROOMS.filter((room) => room.unreadCount > 0);
+      ? chatRooms
+      : chatRooms.filter(
+        (room) => room.NumberOfNotReadMessages > 0
+      );
 
   const isEmpty = filteredRooms.length === 0;
 
@@ -28,14 +55,14 @@ const ChatScreen = () => {
     navigation.navigate("Chat", {
       screen: "ChatRoomScreen",
       params: {
-        chatRoomId: item.id,
-        name: item.name,
+        chatroomId: item.chatroomId,
+        name: item.participants.join(", "),
       },
     });
   };
 
   const renderItem = ({ item }) => {
-    const isUnread = item.unreadCount > 0;
+    const isUnread = item.NumberOfNotReadMessages > 0;
 
     return (
       <ChatRoom onPress={() => onPressChatRoom(item)}>
@@ -45,18 +72,18 @@ const ChatScreen = () => {
 
         <ChatInfo>
           <TopRow>
-            <NameText>{item.name}</NameText>
+            <NameText>{item.participants.join(", ")}</NameText>
             <TimeText>{item.updatedAt}</TimeText>
           </TopRow>
 
-          <MessageText unread={isUnread} numberOfLines={1}>
-            {item.lastMessage}
+          <MessageText unread={isUnread}>
+            {item.lastChatMessage}
           </MessageText>
         </ChatInfo>
 
         {isUnread && (
           <UnreadBadge>
-            <UnreadText>{item.unreadCount}</UnreadText>
+            <UnreadText>{item.NumberOfNotReadMessages}</UnreadText>
           </UnreadBadge>
         )}
       </ChatRoom>
@@ -84,10 +111,10 @@ const ChatScreen = () => {
           >
             <FilterText active={activeTab === "UNREAD"}>안읽음</FilterText>
 
-            {DUMMY_CHAT_ROOMS.filter((r) => r.unreadCount > 0).length > 0 && (
+            {chatRooms.filter((r) => r.NumberOfNotReadMessages > 0).length > 0 && (
               <UnreadCountBadge>
                 <UnreadCountText>
-                  {DUMMY_CHAT_ROOMS.filter((r) => r.unreadCount > 0).length}
+                  {chatRooms.filter((r) => r.NumberOfNotReadMessages > 0).length}
                 </UnreadCountText>
               </UnreadCountBadge>
             )}
@@ -102,13 +129,19 @@ const ChatScreen = () => {
               title="보러가기"
               isActive={true}
               onPress={() => navigation.navigate("Home")}
-              style={{ width: "25%", height: width * 0.09, borderRadius: 20, backgroundColor: colors.black, marginTop: 20 }}
+              style={{
+                width: "25%",
+                height: width * 0.09,
+                borderRadius: 20,
+                backgroundColor: colors.black,
+                marginTop: 20,
+              }}
             />
           </EmptyWrapper>
         ) : (
           <ChatList
             data={filteredRooms}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.chatroomId.toString()}
             renderItem={renderItem}
           />
         )}
