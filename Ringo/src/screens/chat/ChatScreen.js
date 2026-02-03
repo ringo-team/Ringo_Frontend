@@ -22,7 +22,7 @@ const ChatScreen = () => {
   /** 채팅방 불러오기 */
   const fetchChatRoom = async (userId) => {
     try {
-      const token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJyaW5nbyIsImlhdCI6MTc2ODExNzQxNywic3ViIjoicmluZ28xMjM0IiwiZXhwIjoxNzg2MTE3NDE3fQ.MWJ0cpMlO9Kr69jseXgMi33LjITABCScDw1vX8rfDVMYWHSSCmf60ZyOkY-xHlBNvQSHw9e7lOkqmt0M_QKqwQ'";
+      const token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJyaW5nbyIsImlhdCI6MTc2ODExNzQxNywic3ViIjoicmluZ28xMjM0IiwiZXhwIjoxNzg2MTE3NDE3fQ.MWJ0cpMlO9Kr69jseXgMi33LjITABCScDw1vX8rfDVMYWHSSCmf60ZyOkY-xHlBNvQSHw9e7lOkqmt0M_QKqwQ";
       const response = await get(config.CHAT.ROOM_CALL(userId),
       {
         headers: {
@@ -30,7 +30,7 @@ const ChatScreen = () => {
         },
       }
     );
-      setChatRooms(response.data.list);
+      setChatRooms(response.list);
     } catch (error) {
       console.error("채팅방 불러오기 오류:", error.response || error.message);
     }
@@ -38,7 +38,7 @@ const ChatScreen = () => {
 
   /** 최초 진입 */
   useEffect(() => {
-    const userId = 1; // TODO: 실제 로그인 유저 ID
+    const userId = 4; // 테스트용 하드코딩, 실제로는 Keychain 등에서 불러와야 함
     fetchChatRoom(userId);
   }, []);
 
@@ -72,7 +72,7 @@ const ChatScreen = () => {
 
         <ChatInfo>
           <TopRow>
-            <NameText>{item.participants.join(", ")}</NameText>
+            <NameText>{item.participants}</NameText>
             <TimeText>{item.updatedAt}</TimeText>
           </TopRow>
 

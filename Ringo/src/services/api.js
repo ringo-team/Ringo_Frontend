@@ -35,10 +35,9 @@ api.interceptors.response.use(
 );
 
 //GET 함수
-export const get = async (endpoint, params = {}, options = {}) => {
+export const get = async (endpoint, options = {}) => {
     try {
         const response = await api.get(endpoint, { 
-            params,
         ...options,
      });
      if (
