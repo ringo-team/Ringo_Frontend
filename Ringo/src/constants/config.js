@@ -26,6 +26,7 @@ const config = {
     DELETE: (roomId) => `${BASE_URL}/chatrooms/${roomId}`, //채팅방 삭제
     MESSAGE_CALL: (roomId) => `${BASE_URL}/chatrooms/${roomId}/messages`,//채팅방 메세지 불러오기
     ROOM_CALL: (userId) => `${BASE_URL}/users/${userId}/chatrooms`, //사용자 채팅방 불러오기
+    MEMBER_INFO: (chatroomId) => `${BASE_URL}/chatrooms/${chatroomId}/member-info`, //채팅방 멤버 정보(프로필, 해시태그)
   },
 
   SURVEY: {

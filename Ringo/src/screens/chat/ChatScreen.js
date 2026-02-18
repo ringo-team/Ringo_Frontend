@@ -22,7 +22,7 @@ const ChatScreen = () => {
   /** 채팅방 불러오기 */
   const fetchChatRoom = async (userId) => {
     try {
-      const token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJyaW5nbyIsImlhdCI6MTc2ODExNzQxNywic3ViIjoicmluZ28xMjM0IiwiZXhwIjoxNzg2MTE3NDE3fQ.MWJ0cpMlO9Kr69jseXgMi33LjITABCScDw1vX8rfDVMYWHSSCmf60ZyOkY-xHlBNvQSHw9e7lOkqmt0M_QKqwQ";
+      const token = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJyaW5nbyIsImlhdCI6MTc3MDUzOTU2NCwic3ViIjoicmluZ28xMjM0IiwiZXhwIjoxNzg4NTM5NTY0fQ.ry023rRCyP5YN6SnVwiLjaL3r3WJ1mxX05FOtvmqOVgaZrykczIawR4xgqiwZCVFcWjHRG8d8GQG2M409X20hg";
       const response = await get(config.CHAT.ROOM_CALL(userId),
       {
         headers: {
@@ -30,7 +30,22 @@ const ChatScreen = () => {
         },
       }
     );
-      setChatRooms(response.list);
+      const normalized = (response.list || []).map((it) => ({
+        chatroomId: it.chatroomId,
+        chatroomSize: it.chatroomSize,
+        NumberOfNotReadMessages: it.NumberOfNotReadMessages || 0,
+        lastChatMessage: it.lastChatMessage || "",
+        participants: Array.isArray(it.participants)
+          ? it.participants
+          : it.chatOpponent
+          ? [it.chatOpponent]
+          : [],
+        profileImage: it.profileImage || it.chatOpponentProfileUrl || null,
+        updatedAt: it.updatedAt || it.lastSendDateTime || "",
+        raw: it,
+      }));
+
+      setChatRooms(normalized);
     } catch (error) {
       console.error("채팅방 불러오기 오류:", error.response || error.message);
     }
@@ -52,11 +67,17 @@ const ChatScreen = () => {
   const isEmpty = filteredRooms.length === 0;
 
   const onPressChatRoom = (item) => {
+    const name = Array.isArray(item.participants)
+      ? item.participants.join(", ")
+      : item.participants
+      ? String(item.participants)
+      : "알 수 없음";
+
     navigation.navigate("Chat", {
       screen: "ChatRoomScreen",
       params: {
         chatroomId: item.chatroomId,
-        name: item.participants.join(", "),
+        name,
       },
     });
   };
@@ -64,15 +85,25 @@ const ChatScreen = () => {
   const renderItem = ({ item }) => {
     const isUnread = item.NumberOfNotReadMessages > 0;
 
+    const participantsArray = Array.isArray(item.participants)
+      ? item.participants
+      : item.participants
+      ? [String(item.participants)]
+      : [];
+
+    const displayName = participantsArray.length
+      ? participantsArray.join(", ")
+      : item.name || "알 수 없음";
+
     return (
       <ChatRoom onPress={() => onPressChatRoom(item)}>
         <ProfileImage
-          source={item.profileImage ? { uri: item.profileImage } : null}
+          source={item.profileImage ? { uri: item.profileImage } : undefined}
         />
 
         <ChatInfo>
           <TopRow>
-            <NameText>{item.participants}</NameText>
+            <NameText>{displayName}</NameText>
             <TimeText>{item.updatedAt}</TimeText>
           </TopRow>
 

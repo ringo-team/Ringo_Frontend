@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
 import { Dimensions, TextInput } from "react-native";
 import { useRoute } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from "../../constants/colors";
 import { PtdText } from "../../components/CustomText";
 import Background from "../../components/Background";
@@ -11,13 +12,44 @@ const { width } = Dimensions.get("window");
 
 const ChatRoomScreen = () => {
     const route = useRoute();
-    const { chatroomId, name } = route.params;
+    const { chatroomId, name, profileImage: paramProfileImage, hashtags: paramHashtags, memberInfo } = route.params || {};
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const [profileImage, setProfileImage] = useState(
+      paramProfileImage || memberInfo?.profileUrl || null
+    );
+    const [hashtags, setHashtags] = useState(
+      paramHashtags || memberInfo?.hashtag || []
+    );
+
+    const storageKey = `chat_messages_${chatroomId}`;
+
+    useEffect(() => {
+      const load = async () => {
+        try {
+          // load persisted messages
+          const raw = await AsyncStorage.getItem(storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setMessages(parsed);
+            return;
+          }
+          if (memberInfo && Array.isArray(memberInfo.messages) && memberInfo.messages.length) {
+            setMessages(memberInfo.messages);
+            await AsyncStorage.setItem(storageKey, JSON.stringify(memberInfo.messages));
+            return;
+          }
+        } catch (e) {
+          console.warn('Failed to load messages', e.message || e);
+        }
+      };
+
+      load();
+    }, [storageKey, memberInfo]);
 
     const isFirstChat = messages.length === 0;
 
-    const sendMessage = (text) => {
+    const sendMessage = async (text) => {
         if (!text.trim()) return;
 
         const now = new Date();
@@ -33,7 +65,18 @@ const ChatRoomScreen = () => {
             date: now.toDateString(),
         };
 
-        setMessages((prev) => [...prev, newMessage]);
+        try {
+          setMessages((prev) => {
+            const next = [...prev, newMessage];
+            AsyncStorage.setItem(storageKey, JSON.stringify(next)).catch((e) =>
+              console.warn('Failed to save messages', e.message || e)
+            );
+            return next;
+          });
+        } catch (e) {
+          console.warn('Failed to persist message', e.message || e);
+        }
+
         setInput("");
     };
 
@@ -45,12 +88,16 @@ const ChatRoomScreen = () => {
                     <BackButton />
                 </TitleContainer>
                 <Header>
-                    <ProfileImage
-                    
-                    />
+                      <ProfileImage
+                        source={profileImage ? { uri: profileImage } : undefined}
+                      />
                     <HeaderInfo>
                         <NameText>{name}</NameText>
-                        <TagText>#lol #배틀그라운드 #직장인</TagText>
+                        <TagText>
+                          {Array.isArray(hashtags) && hashtags.length
+                            ? hashtags.map((h) => `#${h}`).join(' ')
+                            : ''}
+                        </TagText>
                     </HeaderInfo>
                     <ProfileButton>
                         <ProfileButtonText>프로필 보기</ProfileButtonText>
